@@ -273,7 +273,7 @@ export default function Profile() {
       const fd    = new FormData();
       fd.append("avatar", file);
       const token = localStorage.getItem("token");
-      const res   = await fetch("/api/profile/avatar", {
+      const res   = await fetch("https://fitmitra-server.onrender.com/api/profile/avatar", {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: fd,
