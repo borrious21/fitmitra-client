@@ -20,7 +20,7 @@ import Dashboard          from "./pages/protected/Dashboard/Dashboard";
 import Profile            from "./pages/protected/profile/Profile";
 import Plans              from "./pages/protected/Dashboard/Plans/Plans";
 import LogMeal            from "./pages/protected/Dashboard/Logmeal/Logmeal";
-import Workout            from "./pages/protected/Dashboard/workout/workout";
+import Workout            from "./pages/protected/Dashboard/workout/Workout";
 import Progress           from "./pages/protected/Dashboard/Progress/Progress";
 import MealPlanner        from "./pages/protected/Dashboard/MealPlanner/Mealplanner";
 
