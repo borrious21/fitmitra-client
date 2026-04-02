@@ -1,6 +1,6 @@
 // src/services/apiClient.js
 
-const BASE_URL = 'https://fitmitra-mpzczktlg-borrious21s-projects.vercel.app/api';
+const BASE_URL = 'https://fitmitra-server.onrender.com/api';
 
 export const tokenStore = {
   getToken:        () => localStorage.getItem('token'),
