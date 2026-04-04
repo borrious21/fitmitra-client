@@ -1,7 +1,7 @@
 // src/pages/protected/Admin/AdminWellness/AdminWellness.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiFetch } from "../../../../services/apiClient";
+import { apiFetch } from "../../../../../services/apiClient.js";
 import styles from "./AdminWellness.module.css";
 
 function avg(arr, key) {
