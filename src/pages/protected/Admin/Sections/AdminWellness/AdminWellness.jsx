@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../../../../../services/apiClient.js";
-import styles from "./AdminWellness.module.css";
+import styles from "./Adminwellness.module.css";
 
 function avg(arr, key) {
   if (!arr?.length) return null;
