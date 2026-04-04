@@ -33,6 +33,7 @@ import AdminPlans      from "./pages/protected/Admin/Sections/AdminPlans/AdminPl
 import AdminLogs       from "./pages/protected/Admin/Sections/AdminLogs/AdminLogs";
 import AdminAnalytics  from "./pages/protected/Admin/Sections/AdminAnalytics/AdminAnalytics";
 import AdminNotifications from "./pages/protected/Admin/Sections/AdminNotification/AdminNotfications";
+import AdminWellness from "./pages/protected/Admin/Sections/AdminWellness/AdminWellness";
 
 function App() {
   return (
@@ -69,6 +70,7 @@ function App() {
               {<Route path="logs"          element={<AdminLogs />} /> }
               {<Route path="analytics"     element={<AdminAnalytics />} /> }
               {<Route path="notifications" element={<AdminNotifications />} /> }
+              {<Route path="wellness"      element={<AdminWellness />} />}  
             </Route>
 
             {/* ── Protected user routes ───────────────────────────────────── */}
