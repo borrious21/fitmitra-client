@@ -13,6 +13,7 @@ const NAV = [
   { path: "/admin/plans",         label: "Plans",         icon: "📋"               },
   { path: "/admin/logs",          label: "Logs",          icon: "📝"               },
   { path: "/admin/notifications", label: "Notifications", icon: "🔔"               },
+  { path: "/admin/wellness",      label: "Wellness",      icon: "🧘"               }, 
 ];
 
 function Avatar({ name, url, size = 34 }) {

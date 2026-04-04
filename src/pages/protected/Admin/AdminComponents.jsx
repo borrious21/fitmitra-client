@@ -149,7 +149,6 @@ export function Field({ label, value, onChange, type = "text", options, rows, pl
   );
 }
 
-// ── SectionCard ───────────────────────────────────────────────
 export function SectionCard({ title, children, action }) {
   return (
     <div style={{
@@ -178,7 +177,6 @@ export function SectionCard({ title, children, action }) {
   );
 }
 
-// ── Table primitives ──────────────────────────────────────────
 export function TH({ children }) {
   return (
     <th style={{
@@ -210,7 +208,6 @@ export function TD({ children, bold, accent, muted }) {
   );
 }
 
-// ── Shimmer row (loading placeholder) ────────────────────────
 export function ShimmerRows({ cols = 5, rows = 6 }) {
   return Array.from({ length: rows }).map((_, i) => (
     <tr key={i}>
@@ -226,7 +223,6 @@ export function ShimmerRows({ cols = 5, rows = 6 }) {
   ));
 }
 
-// ── Pagination ────────────────────────────────────────────────
 export function Pagination({ page, pages, total, limit, onPrev, onNext }) {
   return (
     <div style={{
@@ -247,7 +243,6 @@ export function Pagination({ page, pages, total, limit, onPrev, onNext }) {
   );
 }
 
-// ── Modal wrapper ─────────────────────────────────────────────
 export function Modal({ onClose, children, width = 480, title }) {
   return (
     <div
@@ -293,8 +288,6 @@ export function Modal({ onClose, children, width = 480, title }) {
   );
 }
 
-
-// ── Spinner ───────────────────────────────────────────────────
 export function Spinner({ size = 32, color = "#FF5C1A" }) {
   return (
     <svg
@@ -313,7 +306,6 @@ export function Spinner({ size = 32, color = "#FF5C1A" }) {
   );
 }
 
-// ── Toast ─────────────────────────────────────────────────────
 const TOAST_ICONS = {
   success: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -356,7 +348,6 @@ export function Toast({ msg, type = "success", onDone }) {
     return () => clearTimeout(t);
   }, []);
 
-  // Progress bar countdown
   useEffect(() => {
     const start = Date.now();
     const frame = () => {
@@ -369,7 +360,6 @@ export function Toast({ msg, type = "success", onDone }) {
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Auto-dismiss
   useEffect(() => {
     const t = setTimeout(() => {
       setVisible(false);
@@ -466,8 +456,6 @@ export function Toast({ msg, type = "success", onDone }) {
   );
 }
 
-// ── Table ─────────────────────────────────────────────────────
-// columns: [{ key, label, render?(value, row) => ReactNode }]
 export function Table({ rows = [], columns = [], loading = false, emptyMsg = "No data.", shimmerRows = 5 }) {
   return (
     <div style={{ overflowX: "auto" }}>
