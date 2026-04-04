@@ -1,6 +1,5 @@
 /* AdminLayout.module.css */
 
-/* ─── Shell ──────────────────────────────────────────────────────────────── */
 .shell {
   display: flex;
   min-height: 100vh;
@@ -8,7 +7,6 @@
   overflow: hidden;
 }
 
-/* ─── Sidebar ────────────────────────────────────────────────────────────── */
 .sidebar {
   width: 220px;
   min-height: 100vh;
@@ -27,7 +25,6 @@
 }
 .collapsed { width: 64px; }
 
-/* ─── Logo ───────────────────────────────────────────────────────────────── */
 .logo {
   display: flex;
   align-items: center;

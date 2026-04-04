@@ -21,7 +21,6 @@ const GOAL_COLORS = {
   not_set:          "#475569",
 };
 
-// ─── SVG bar chart ────────────────────────────────────────────────────────────
 function BarChart({ data, color = "#FF5C1A", height = 120 }) {
   if (!data?.length) return <div className={styles.chartEmpty}>No data yet</div>;
   const max = Math.max(...data.map(d => d.value), 1);
@@ -65,7 +64,6 @@ function BarChart({ data, color = "#FF5C1A", height = 120 }) {
   );
 }
 
-// ─── Donut chart for goal distribution ───────────────────────────────────────
 function DonutChart({ data }) {
   if (!data?.length) return <div className={styles.chartEmpty}>No data yet</div>;
   const total  = data.reduce((s, d) => s + d.count, 0);
@@ -110,7 +108,6 @@ function DonutChart({ data }) {
   );
 }
 
-// ─── KPI card ─────────────────────────────────────────────────────────────────
 function KpiCard({ icon, label, value, sub, color, loading, onClick }) {
   return (
     <div className={styles.kpiCard} style={{ borderTopColor: color }}
@@ -127,7 +124,6 @@ function KpiCard({ icon, label, value, sub, color, loading, onClick }) {
   );
 }
 
-// ─── Nav card ─────────────────────────────────────────────────────────────────
 function NavCard({ icon, label, desc, path, color, badge }) {
   const navigate = useNavigate();
   return (
@@ -143,7 +139,6 @@ function NavCard({ icon, label, desc, path, color, badge }) {
   );
 }
 
-// ─── Top user row ─────────────────────────────────────────────────────────────
 function TopUserRow({ user, rank }) {
   const [imgErr, setImgErr] = useState(false);
   return (
@@ -166,7 +161,6 @@ function TopUserRow({ user, rank }) {
   );
 }
 
-// ─── Recent user row ──────────────────────────────────────────────────────────
 function RecentUserRow({ user }) {
   const [imgErr, setImgErr] = useState(false);
   return (
@@ -190,7 +184,6 @@ function RecentUserRow({ user }) {
   );
 }
 
-// ─── Popular workout row ──────────────────────────────────────────────────────
 function WorkoutRow({ workout, rank, max }) {
   const pct = max > 0 ? (workout.times_logged / max) * 100 : 0;
   return (
@@ -210,7 +203,6 @@ function WorkoutRow({ workout, rank, max }) {
   );
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
 export default function AdminDashboard() {
   const navigate = useNavigate();
 
@@ -222,7 +214,6 @@ export default function AdminDashboard() {
   const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
-      // Primary dashboard data
       const res = await apiFetch("/admin/dashboard");
       const d   = res?.data ?? res;
       setData(d);
@@ -238,17 +229,14 @@ export default function AdminDashboard() {
 
   const ov = data?.overview ?? {};
 
-  // User growth chart data
   const growthData = (data?.user_growth ?? []).map(d => ({
     label: d.label?.split(" ")[0] ?? "",   // "Nov", "Dec" etc
     value: Number(d.signups ?? 0),
   }));
 
-  // Popular workouts
   const popularWorkouts = data?.popular_workouts ?? [];
   const maxWorkout      = popularWorkouts[0]?.times_logged ?? 1;
 
-  // Goal distribution
   const goalDist = data?.goal_distribution ?? [];
 
   return (
@@ -370,6 +358,7 @@ export default function AdminDashboard() {
         <NavCard icon="📝" label="Logs"          desc="Audit & activity logs"         path="/admin/logs"          color="#64748b" />
         <NavCard icon="🔔" label="Notifications" desc="Send to users"                 path="/admin/notifications" color="#06b6d4" />
         <NavCard icon="⚠️" label="At-Risk"       desc="Users needing attention"       path="/admin/analytics"     color="#ef4444" />
+        <NavCard icon="🧘" label="Wellness"      desc="Mental health & mood"          path="/admin/wellness"      color="#8b5cf6" />
       </div>
 
       {/* Top active users */}

@@ -1,11 +1,4 @@
 // src/pages/protected/Admin/AdminLayout.jsx
-// Wrap ALL admin routes with this. Sidebar stays, content changes.
-// Usage in App.jsx:
-//   <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
-//     <Route index        element={<AdminDashboard />} />
-//     <Route path="users" element={<AdminUsers />} />
-//     ...etc
-//   </Route>
 
 import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
