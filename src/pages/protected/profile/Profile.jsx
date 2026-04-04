@@ -24,9 +24,9 @@ function calcBMI(h, w) {
 
 function bmiLabel(bmi) {
   if (bmi < 18.5) return { label: "Underweight", color: "#00C8E0" };
-  if (bmi < 25)   return { label: "Normal",       color: "#B8F000" };
-  if (bmi < 30)   return { label: "Overweight",   color: "#FF5C1A" };
-  return                  { label: "Obese",        color: "#FF4D6D" };
+  if (bmi < 25) return { label: "Normal", color: "#B8F000" };
+  if (bmi < 30) return { label: "Overweight", color: "#FF5C1A" };
+  return { label: "Obese", color: "#FF4D6D" };
 }
 
 const FMT_ACTIVITY = {
@@ -44,19 +44,19 @@ const FMT_COND = {
 };
 
 const LEVEL_LABELS = {
-  1:"🌱 Rookie", 2:"🏃 Mover", 3:"💪 Grinder", 4:"🔥 Crusher",
-  5:"⚡ Athlete", 6:"🥈 Contender", 7:"🥇 Champion", 8:"🏆 Elite",
-  9:"💎 Legend", 10:"🚀 GOAT",
+  1: "🌱 Rookie", 2: "🏃 Mover", 3: "💪 Grinder", 4: "🔥 Crusher",
+  5: "⚡ Athlete", 6: "🥈 Contender", 7: "🥇 Champion", 8: "🏆 Elite",
+  9: "💎 Legend", 10: "🚀 GOAT",
 };
 
 
 function mapConditionsFromApi(mc = {}) {
   const result = [];
   if (mc.high_blood_pressure) result.push("high_bp");
-  if (mc.diabetes)            result.push("diabetes");
-  if (mc.pcod)                result.push("pcod");
-  if (mc.thyroid)             result.push("thyroid");
-  if (mc.injuries)            result.push("injuries");
+  if (mc.diabetes) result.push("diabetes");
+  if (mc.pcod) result.push("pcod");
+  if (mc.thyroid) result.push("thyroid");
+  if (mc.injuries) result.push("injuries");
   return result.length > 0 ? result : ["none"];
 }
 
@@ -64,25 +64,25 @@ function mapConditionsToApi(arr = []) {
   const isNone = arr.includes("none");
   return {
     high_blood_pressure: !isNone && arr.includes("high_bp"),
-    diabetes:            !isNone && arr.includes("diabetes"),
-    pcod:                !isNone && arr.includes("pcod"),
-    thyroid:             !isNone && arr.includes("thyroid"),
-    injuries:            !isNone && arr.includes("injuries"),
+    diabetes: !isNone && arr.includes("diabetes"),
+    pcod: !isNone && arr.includes("pcod"),
+    thyroid: !isNone && arr.includes("thyroid"),
+    injuries: !isNone && arr.includes("injuries"),
   };
 }
 
 function apiToForm(d) {
   return {
-    age:                d.age            ? String(d.age)       : "",
-    gender:             d.gender         ?? "",
-    height_cm:          d.height_cm      ? String(d.height_cm) : "",
-    weight_kg:          d.weight_kg      ? String(d.weight_kg) : "",
-    activity_level:     d.activity_level ?? "",
-    goal:               d.goal           ?? "",
-    diet_type:          d.diet_type      ?? "",
+    age: d.age ? String(d.age) : "",
+    gender: d.gender ?? "",
+    height_cm: d.height_cm ? String(d.height_cm) : "",
+    weight_kg: d.weight_kg ? String(d.weight_kg) : "",
+    activity_level: d.activity_level ?? "",
+    goal: d.goal ?? "",
+    diet_type: d.diet_type ?? "",
     medical_conditions: mapConditionsFromApi(d.medical_conditions),
-    plan_duration:      d.plan_duration  ? String(d.plan_duration) : "4",
-    target_kcal:        d.target_kcal    ? String(d.target_kcal)   : "",
+    plan_duration: d.plan_duration ? String(d.plan_duration) : "4",
+    target_kcal: d.target_kcal ? String(d.target_kcal) : "",
   };
 }
 
@@ -108,7 +108,7 @@ function Section({ children, delay = 0 }) {
 }
 
 function XPBar({ xp = 0, level = {}, streak = {} }) {
-  const p     = level.progress_pct ?? 0;
+  const p = level.progress_pct ?? 0;
   const label = LEVEL_LABELS[level.current] ?? `Level ${level.current ?? 1}`;
   return (
     <div className={styles.xpBar}>
@@ -136,10 +136,10 @@ function GamificationPanel({ data }) {
       <XPBar xp={xp} level={level} streak={streak} />
       <div className={styles.gamStatsGrid}>
         {[
-          { icon: "🏋️", label: "Workouts",  val: stats?.total_completed   ?? 0 },
-          { icon: "🔥", label: "Streak",    val: `${streak?.current ?? 0}d` },
-          { icon: "🏅", label: "PRs",       val: stats?.total_pbs         ?? 0 },
-          { icon: "🔄", label: "Deloads",   val: stats?.deloads_completed ?? 0 },
+          { icon: "🏋️", label: "Workouts", val: stats?.total_completed ?? 0 },
+          { icon: "🔥", label: "Streak", val: `${streak?.current ?? 0}d` },
+          { icon: "🏅", label: "PRs", val: stats?.total_pbs ?? 0 },
+          { icon: "🔄", label: "Deloads", val: stats?.deloads_completed ?? 0 },
         ].map(s => (
           <div key={s.label} className={styles.gamStatItem}>
             <span className={styles.gamStatIcon}>{s.icon}</span>
@@ -164,7 +164,7 @@ function GamificationPanel({ data }) {
 
 function ActivePlanCard({ plan, onNavigate }) {
   if (!plan) return null;
-  const macros        = plan.plan_data?.summary?.macro_targets;
+  const macros = plan.plan_data?.summary?.macro_targets;
   const totalWorkouts = plan.plan_data?.summary?.total_workouts;
   return (
     <div className={styles.activePlanCard}>
@@ -181,10 +181,10 @@ function ActivePlanCard({ plan, onNavigate }) {
       {macros && (
         <div className={styles.activePlanMacros}>
           {[
-            { label: "kcal",    val: macros.dailyKcal,              color: "#f59e0b" },
-            { label: "protein", val: `${macros.proteinTarget}g`,    color: "#ef4444" },
-            { label: "carbs",   val: `${macros.carbsTarget}g`,      color: "#3b82f6" },
-            { label: "fat",     val: `${macros.fatTarget}g`,        color: "#10b981" },
+            { label: "kcal", val: macros.dailyKcal, color: "#f59e0b" },
+            { label: "protein", val: `${macros.proteinTarget}g`, color: "#ef4444" },
+            { label: "carbs", val: `${macros.carbsTarget}g`, color: "#3b82f6" },
+            { label: "fat", val: `${macros.fatTarget}g`, color: "#10b981" },
           ].filter(m => m.val).map(m => (
             <div key={m.label} className={styles.activePlanMacroChip}
               style={{ color: m.color, borderColor: `${m.color}33` }}>
@@ -206,24 +206,24 @@ const EMPTY_FORM = {
 };
 
 export default function Profile() {
-  const navigate        = useNavigate();
+  const navigate = useNavigate();
   const { user, logout } = useContext(AuthContext);
 
-  const [profile,         setProfile]         = useState(EMPTY_FORM);
-  const [original,        setOriginal]        = useState(EMPTY_FORM);
-  const [editMode,        setEditMode]        = useState(false);
-  const [isNew,           setIsNew]           = useState(false);
-  const [loading,         setLoading]         = useState(true);
-  const [saving,          setSaving]          = useState(false);
-  const [errors,          setErrors]          = useState({});
-  const [alert,           setAlert]           = useState(null);
-  const [avatarUrl,       setAvatarUrl]       = useState(null);
-  const [savedAvatarUrl,  setSavedAvatarUrl]  = useState(null);
+  const [profile, setProfile] = useState(EMPTY_FORM);
+  const [original, setOriginal] = useState(EMPTY_FORM);
+  const [editMode, setEditMode] = useState(false);
+  const [isNew, setIsNew] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [alert, setAlert] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [savedAvatarUrl, setSavedAvatarUrl] = useState(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [notifs,          setNotifs]          = useState(true);
-  const [reminders,       setReminders]       = useState(false);
-  const [gamification,    setGamification]    = useState(null);
-  const [activePlan,      setActivePlan]      = useState(null);
+  const [notifs, setNotifs] = useState(true);
+  const [reminders, setReminders] = useState(false);
+  const [gamification, setGamification] = useState(null);
+  const [activePlan, setActivePlan] = useState(null);
 
   const fileInputRef = useRef();
 
@@ -231,16 +231,16 @@ export default function Profile() {
     loadProfile();
     apiFetch("/plans/gamification")
       .then(r => setGamification(r?.data ?? r ?? null))
-      .catch(() => {});
+      .catch(() => { });
     apiFetch("/plans/active")
       .then(r => setActivePlan(r?.data ?? r ?? null))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const loadProfile = async () => {
     setLoading(true);
     try {
-      const res  = await getMyProfile();
+      const res = await getMyProfile();
       const data = res?.data ?? res;
       const form = apiToForm(data);
       setProfile(form);
@@ -261,8 +261,6 @@ export default function Profile() {
     }
   };
 
-
-  // ─── FIXED: Avatar upload with robust URL parsing ────────────────────────
   const handleAvatarChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -270,10 +268,10 @@ export default function Profile() {
     setAvatarUrl(localPreview);
     setAvatarUploading(true);
     try {
-      const fd    = new FormData();
+      const fd = new FormData();
       fd.append("avatar", file);
       const token = localStorage.getItem("token");
-      const res   = await fetch("https://fitmitra-server.onrender.com/api/profile/avatar", {
+      const res = await fetch("https://fitmitra-server.onrender.com/api/profile/avatar", {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: fd,
@@ -284,28 +282,25 @@ export default function Profile() {
       }
       const json = await res.json();
 
-      // Handle varied response shapes:
-      // { data: { avatar_url } }, { data: { url } }, { avatar_url }, { url }
       const uploadedUrl =
         json?.data?.avatar_url ??
-        json?.data?.url        ??
-        json?.avatar_url       ??
-        json?.url              ??
+        json?.data?.url ??
+        json?.avatar_url ??
+        json?.url ??
         null;
 
       if (!uploadedUrl) {
-        // Log for debugging — remove once confirmed working
         console.error("Avatar upload response shape:", json);
         throw new Error("Server did not return a valid avatar URL.");
       }
 
-      URL.revokeObjectURL(localPreview); // only revoke AFTER we have a real URL
+      URL.revokeObjectURL(localPreview);
       setAvatarUrl(uploadedUrl);
       setSavedAvatarUrl(uploadedUrl);
       showAlert("success", "Profile photo updated!");
     } catch (err) {
       showAlert("error", err?.message ?? "Photo upload failed. Please try again.");
-      setAvatarUrl(savedAvatarUrl); // restore last known good avatar
+      setAvatarUrl(savedAvatarUrl);
     } finally {
       setAvatarUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -344,10 +339,10 @@ export default function Profile() {
     const w = parseFloat(profile.weight_kg);
     if (!profile.weight_kg || isNaN(w) || w < 30 || w > 250)
       e.weight_kg = "Weight must be 30–250 kg";
-    if (!profile.gender)         e.gender         = "Required";
+    if (!profile.gender) e.gender = "Required";
     if (!profile.activity_level) e.activity_level = "Required";
-    if (!profile.goal)           e.goal           = "Required";
-    if (!profile.diet_type)      e.diet_type      = "Required";
+    if (!profile.goal) e.goal = "Required";
+    if (!profile.diet_type) e.diet_type = "Required";
     const dur = parseInt(profile.plan_duration, 10);
     if (profile.plan_duration && (isNaN(dur) || dur < 1 || dur > 52))
       e.plan_duration = "Duration must be 1–52 weeks";
@@ -364,20 +359,20 @@ export default function Profile() {
     if (!validate()) { showAlert("error", "Please fix the highlighted fields."); return; }
     setSaving(true);
     const payload = {
-      age:                Number(profile.age),
-      gender:             profile.gender,
-      height_cm:          Number(profile.height_cm),
-      weight_kg:          Number(profile.weight_kg),
-      activity_level:     profile.activity_level,
-      goal:               profile.goal,
-      diet_type:          profile.diet_type,
+      age: Number(profile.age),
+      gender: profile.gender,
+      height_cm: Number(profile.height_cm),
+      weight_kg: Number(profile.weight_kg),
+      activity_level: profile.activity_level,
+      goal: profile.goal,
+      diet_type: profile.diet_type,
       medical_conditions: mapConditionsToApi(profile.medical_conditions),
       plan_duration: Number(profile.plan_duration) || 4,
-      target_kcal:   profile.target_kcal ? Number(profile.target_kcal) : null,
+      target_kcal: profile.target_kcal ? Number(profile.target_kcal) : null,
     };
     try {
       if (isNew) { await createProfile(payload); }
-      else       { await updateProfile(payload); }
+      else { await updateProfile(payload); }
       setOriginal({ ...profile });
       setIsNew(false); setEditMode(false);
       showAlert("success", isNew ? "Profile created successfully!" : "Profile saved!");
@@ -412,13 +407,13 @@ export default function Profile() {
     setTimeout(() => setAlert(null), 4500);
   };
 
-  const bmi        = calcBMI(profile.height_cm, profile.weight_kg);
-  const bmiInfo    = bmi ? bmiLabel(parseFloat(bmi)) : null;
+  const bmi = calcBMI(profile.height_cm, profile.weight_kg);
+  const bmiInfo = bmi ? bmiLabel(parseFloat(bmi)) : null;
   const hasChanges = JSON.stringify(profile) !== JSON.stringify(original);
 
-  const displayName  = user?.name  ?? "User";
+  const displayName = user?.name ?? "User";
   const displayEmail = user?.email ?? "";
-  const initials     = displayName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+  const initials = displayName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
 
   const conditionLabel = (() => {
     const c = profile.medical_conditions;
@@ -443,11 +438,11 @@ export default function Profile() {
         <a className={styles.navLogo} href="/dashboard">
           <span className={styles.navLogoIcon}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
-              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
-              <line x1="6" y1="1" x2="6" y2="4"/>
-              <line x1="10" y1="1" x2="10" y2="4"/>
-              <line x1="14" y1="1" x2="14" y2="4"/>
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+              <line x1="6" y1="1" x2="6" y2="4" />
+              <line x1="10" y1="1" x2="10" y2="4" />
+              <line x1="14" y1="1" x2="14" y2="4" />
             </svg>
           </span>
           <span className={styles.navLogoWord}>FIT<span>MITRA</span></span>
@@ -488,8 +483,8 @@ export default function Profile() {
                   title="Change photo" type="button" disabled={avatarUploading}
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                    <circle cx="12" cy="13" r="4"/>
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
                   </svg>
                 </button>
                 <input
@@ -569,7 +564,7 @@ export default function Profile() {
                 <div className={styles.detailCard}>
                   <div className={styles.detailCardHeader}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
                     </svg>
                     <h3>Personal</h3>
                   </div>
@@ -596,7 +591,7 @@ export default function Profile() {
                 <div className={styles.detailCard}>
                   <div className={styles.detailCardHeader}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                     </svg>
                     <h3>Fitness Goals</h3>
                   </div>
@@ -617,7 +612,7 @@ export default function Profile() {
                 <div className={styles.detailCard}>
                   <div className={styles.detailCardHeader}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                     </svg>
                     <h3>Body Metrics</h3>
                   </div>
@@ -634,7 +629,7 @@ export default function Profile() {
                 <div className={styles.detailCard}>
                   <div className={styles.detailCardHeader}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                     </svg>
                     <h3>Health</h3>
                   </div>
@@ -647,10 +642,10 @@ export default function Profile() {
                 <div className={styles.detailCard}>
                   <div className={styles.detailCardHeader}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                      <rect x="3" y="4" width="18" height="18" rx="2"/>
-                      <line x1="16" y1="2" x2="16" y2="6"/>
-                      <line x1="8"  y1="2" x2="8"  y2="6"/>
-                      <line x1="3"  y1="10" x2="21" y2="10"/>
+                      <rect x="3" y="4" width="18" height="18" rx="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
                     </svg>
                     <h3>Plan Settings</h3>
                   </div>
@@ -684,8 +679,8 @@ export default function Profile() {
               <div className={`${styles.formSection} ${styles.accent}`}>
                 <div className={styles.formSectionTitle}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
                   </svg>
                   Basic Information
                 </div>
@@ -732,9 +727,9 @@ export default function Profile() {
               <div className={`${styles.formSection} ${styles.accent}`}>
                 <div className={styles.formSectionTitle}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <circle cx="12" cy="12" r="6"/>
-                    <circle cx="12" cy="12" r="2"/>
+                    <circle cx="12" cy="12" r="10" />
+                    <circle cx="12" cy="12" r="6" />
+                    <circle cx="12" cy="12" r="2" />
                   </svg>
                   Fitness Goals
                 </div>
@@ -784,10 +779,10 @@ export default function Profile() {
               <div className={`${styles.formSection} ${styles.accent}`}>
                 <div className={styles.formSectionTitle}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8"  y1="2" x2="8"  y2="6"/>
-                    <line x1="3"  y1="10" x2="21" y2="10"/>
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
                   </svg>
                   Plan Settings
                 </div>
@@ -819,18 +814,18 @@ export default function Profile() {
               <div className={`${styles.formSection} ${styles.accent}`}>
                 <div className={styles.formSectionTitle}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>
                   Health Conditions
                 </div>
                 <div className={styles.checkboxGrid}>
                   {[
-                    { value: "high_bp",  label: "🩺 High Blood Pressure" },
-                    { value: "diabetes", label: "💉 Diabetes"            },
-                    { value: "pcod",     label: "🔬 PCOD/PCOS"           },
-                    { value: "thyroid",  label: "🧪 Thyroid"             },
-                    { value: "injuries", label: "🩹 Injuries"            },
-                    { value: "none",     label: "✅ None of the above"   },
+                    { value: "high_bp", label: "🩺 High Blood Pressure" },
+                    { value: "diabetes", label: "💉 Diabetes" },
+                    { value: "pcod", label: "🔬 PCOD/PCOS" },
+                    { value: "thyroid", label: "🧪 Thyroid" },
+                    { value: "injuries", label: "🩹 Injuries" },
+                    { value: "none", label: "✅ None of the above" },
                   ].map(c => {
                     const checked = profile.medical_conditions.includes(c.value);
                     return (
