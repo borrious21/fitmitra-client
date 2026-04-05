@@ -9,16 +9,12 @@ import {
 import { Eye, EyeOff, Loader2, AlertCircle, Activity, Heart, Mail } from "lucide-react";
 import OtpInput from "../../../components/Otp/OtpInput";
 import ThemeToggle from "../../../components/ThemeToggle/ThemeToggle";
+import { tokenStore } from "../../../services/apiClient";
 import styles from "./Login.module.css";
 
-// ── Helper: resolve where a verified, onboarded user should land ──────────────
 function resolveDestination(user, fallback) {
   const role = user.role ?? user.user_role ?? "";
-
-  // Admins always go to the admin dashboard
   if (role === "admin") return "/admin";
-
-  // Regular users: respect the "from" redirect or go to dashboard
   const hasOnboarded =
     user.hasCompletedOnboarding ?? user.has_completed_onboarding ?? false;
   return hasOnboarded ? fallback : "/onboarding";
@@ -27,7 +23,7 @@ function resolveDestination(user, fallback) {
 const Login = () => {
   const navigate  = useNavigate();
   const location  = useLocation();
-  const { login, logout, error, clearError, user, isAuthenticated, isInitializing } =
+  const { login, error, clearError, user, isAuthenticated, isInitializing } =
     useContext(AuthContext);
 
   const [formData, setFormData]         = useState({ email: "", password: "" });
@@ -44,23 +40,18 @@ const Login = () => {
   const [verifyError, setVerifyError]       = useState(null);
   const [postVerifyMessage, setPostVerifyMessage] = useState(null);
 
-  // Where to send the user after login (ignored for admins)
   const from = location.state?.from?.pathname || "/dashboard";
 
   useEffect(() => { clearError(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Redirect once auth state is resolved ────────────────────────────────────
   useEffect(() => {
     if (isAuthenticated && user && !isInitializing) {
-      // Block unverified users — let the unverified prompt handle them
       if (!user.isVerified) return;
-
       const destination = resolveDestination(user, from);
       navigate(destination, { replace: true });
     }
   }, [isAuthenticated, user, isInitializing, navigate, from]);
 
-  // ── Show "email not verified" prompt ────────────────────────────────────────
   useEffect(() => {
     if (localError) {
       const msg = (localError?.message || String(localError)).toLowerCase();
@@ -103,10 +94,12 @@ const Login = () => {
     setLocalError(null);
     try {
       const { token, user: rawUser } = await loginService(formData.email, formData.password);
-      // login() updates AuthContext → the useEffect above fires → navigate()
       login(token, rawUser);
     } catch (err) {
-      if (err?.status === 403) logout();
+      // 403 means a stale token was in localStorage — clear it silently.
+      // Do NOT call logout() here: the user has no session, so logout()
+      // fires POST /auth/logout which returns 401 and pollutes the console.
+      if (err?.status === 403) tokenStore.clearAll();
       setLocalError(err);
     } finally {
       setIsLoading(false);
@@ -135,8 +128,8 @@ const Login = () => {
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (otp.length !== 6)        { setVerifyError("Please enter the complete 6-digit code"); return; }
-    if (!formData.email.trim())  { setVerifyError("Email is required."); return; }
+    if (otp.length !== 6)       { setVerifyError("Please enter the complete 6-digit code"); return; }
+    if (!formData.email.trim()) { setVerifyError("Email is required."); return; }
 
     setVerifyLoading(true);
     setVerifyError(null);
@@ -148,12 +141,10 @@ const Login = () => {
       setResendSuccess(false);
       setLocalError(null);
 
-      // Auto-login after verification
       try {
         setIsLoading(true);
         const { token, user: rawUser } = await loginService(formData.email, formData.password);
         login(token, rawUser);
-        // Navigation handled by the useEffect above
       } catch {
         setPostVerifyMessage("Email verified! Please sign in with your password to continue.");
       } finally {
@@ -172,7 +163,6 @@ const Login = () => {
   return (
     <div className={styles.container}>
 
-      {/* ── LEFT PANEL ──────────────────────────────────────── */}
       <div className={styles.leftPanel}>
         <div className={styles.imageOverlay} />
         <div className={styles.leftContent}>
@@ -216,7 +206,6 @@ const Login = () => {
         </div>
       </div>
 
-      {/* ── RIGHT PANEL ─────────────────────────────────────── */}
       <div className={styles.rightPanel}>
 
         <div className={styles.themeToggleWrap}>

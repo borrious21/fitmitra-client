@@ -14,6 +14,19 @@ export const tokenStore = {
   },
 };
 
+const AUTH_ROUTES = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/refresh',
+  '/auth/verify',
+  '/auth/resend',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+];
+
+const isAuthRoute = (endpoint) =>
+  AUTH_ROUTES.some((route) => endpoint.includes(route));
+
 let refreshPromise = null;
 
 const attemptTokenRefresh = async () => {
@@ -49,11 +62,13 @@ const attemptTokenRefresh = async () => {
 export const apiFetch = async (endpoint, options = {}, _retry = true) => {
   const token = tokenStore.getToken();
 
+  const skipAuth = isAuthRoute(endpoint);
+
   const config = {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(token && !skipAuth ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
   };
@@ -61,7 +76,7 @@ export const apiFetch = async (endpoint, options = {}, _retry = true) => {
   const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
   const res = await fetch(url, config);
 
-  if (res.status === 401 && _retry) {
+  if (res.status === 401 && _retry && !skipAuth) {
     try {
       const newToken = await attemptTokenRefresh();
       return apiFetch(endpoint, {

@@ -387,7 +387,7 @@ export default function LandingPage() {
       {/* ── FINAL CTA ── */}
       <section className={styles.cta}>
         <img
-          src="/images/cta-bg.jpg"
+          src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775307929/The_Olympia_Champions_Tee_-_Season_4_Drop_1_Signup_now_for_early_access_link_in_bio_nppuwx.jpg"
           alt=""
           className={styles.ctaBgImg}
           aria-hidden="true"
