@@ -27,7 +27,6 @@ const normalizeUser = (rawUser) => {
       false,
   };
 
-  // DEBUG: remove this once the issue is resolved
   console.log('[normalizeUser] raw input:', rawUser);
   console.log('[normalizeUser] hasCompletedOnboarding resolved to:', normalized.hasCompletedOnboarding);
 

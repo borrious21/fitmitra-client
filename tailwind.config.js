@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://fitmitra-mpzczktlg-borrious21s-projects.vercel.app/', 
+        target: 'https://fitmitra-server.onrender.com',
         changeOrigin: true,
         secure: false,
       }

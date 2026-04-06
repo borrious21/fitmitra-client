@@ -1,16 +1,14 @@
-// vite.config.js
-
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  base: '/',
   plugins: [react()],
   server: {
     proxy: {
       '/api': {
-        target: 'https://fitmitra-mpzczktlg-borrious21s-projects.vercel.app/',
+        target: 'https://fitmitra-server.onrender.com', // ← Render backend
         changeOrigin: true,
+        secure: true,
       }
     }
   }
