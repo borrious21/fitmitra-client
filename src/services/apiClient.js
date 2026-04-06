@@ -16,10 +16,12 @@ export const tokenStore = {
 
 const AUTH_ROUTES = [
   '/auth/login',
+  '/auth/signup',
   '/auth/register',
   '/auth/refresh',
-  '/auth/verify',
-  '/auth/resend',
+  '/auth/verify-email',
+  '/auth/verify-reset-otp',
+  '/auth/resend-verification',
   '/auth/forgot-password',
   '/auth/reset-password',
 ];
