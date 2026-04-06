@@ -3,13 +3,4 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  server: {
-    proxy: {
-      '/api': {
-        target: 'https://fitmitra-server.onrender.com', // ← Render backend
-        changeOrigin: true,
-        secure: true,
-      }
-    }
-  }
 })
