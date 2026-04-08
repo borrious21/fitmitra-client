@@ -50,7 +50,7 @@ const IcoRefresh = () => (
   </svg>
 );
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// Component 
 const CheckEmail = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -67,11 +67,10 @@ const CheckEmail = () => {
     setResendLoading(true);
     setResendSuccess(false);
     try {
-      // Replace with your actual resend service call
-      // await resendVerificationEmailService(email);
-      await new Promise((r) => setTimeout(r, 1200)); // mock
+
+      await new Promise((r) => setTimeout(r, 1200)); 
       setResendSuccess(true);
-      // 60s cooldown
+
       let t = 60;
       setResendCooldown(t);
       const interval = setInterval(() => {
@@ -80,7 +79,7 @@ const CheckEmail = () => {
         if (t <= 0) clearInterval(interval);
       }, 1000);
     } catch {
-      // handle silently — user can retry
+
     } finally {
       setResendLoading(false);
     }

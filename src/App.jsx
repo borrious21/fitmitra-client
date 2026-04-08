@@ -4,7 +4,6 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AdminRoute from "./routes/AdminRoute";
 
-// Pages
 import Landing            from "./pages/public/Landing/Landing";
 import Signup             from "./pages/public/Signup/Signup";
 import Login              from "./pages/public/Login/Login";

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./Landing.module.css";
-
+import ThemeToggle from "../../../components/ThemeToggle/ThemeToggle";
 
 const features = [
   {
@@ -56,8 +56,7 @@ const steps = [
 
 const testimonials = [
   {
-    quote:
-      "FitMitra felt like having a personal trainer AND nutritionist in my pocket. The AI adapts before I even realise I need it.",
+    quote: "FitMitra felt like having a personal trainer AND nutritionist in my pocket. The AI adapts before I even realise I need it.",
     result: "−14 kg",
     name: "Priya Sharma",
     role: "5 months · Weight loss",
@@ -65,8 +64,7 @@ const testimonials = [
     avatar: "/images/avatar-priya.jpg",
   },
   {
-    quote:
-      "The macro-tracking is insanely accurate. Five apps before this — none came close to this level of personalisation.",
+    quote: "The macro-tracking is insanely accurate. Five apps before this — none came close to this level of personalisation.",
     result: "+8 kg muscle",
     name: "Arjun Mehta",
     role: "Lean muscle gain",
@@ -74,8 +72,7 @@ const testimonials = [
     avatar: "/images/avatar-arjun.jpg",
   },
   {
-    quote:
-      "Couch to half-marathon in 16 weeks. The streak feature carried me through the hardest days when I wanted to quit.",
+    quote: "Couch to half-marathon in 16 weeks. The streak feature carried me through the hardest days when I wanted to quit.",
     result: "21 km done",
     name: "Neha Kapoor",
     role: "Marathon finisher",
@@ -102,7 +99,6 @@ const stats = [
 
 const cities = ["Kathmandu", "Pokhara", "Biratnagar", "Lalitpur", "Chitwan"];
 const avatarInitials = ["RK", "PS", "AM", "NK", "+"];
-
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -134,6 +130,7 @@ export default function LandingPage() {
             ))}
           </ul>
           <div className={styles.navRight}>
+            <ThemeToggle />
             <Link to="/login"  className={styles.navSignin}>Sign in</Link>
             <Link to="/signup" className={styles.navCta}>Get started free</Link>
           </div>
@@ -156,6 +153,10 @@ export default function LandingPage() {
             ].map(([href, label]) => (
               <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>
             ))}
+            <div className={styles.drawerToggleRow}>
+              <span className={styles.drawerToggleLabel}>Dark mode</span>
+              <ThemeToggle />
+            </div>
             <Link to="/login"  onClick={() => setMenuOpen(false)}>Sign in</Link>
             <Link to="/signup" className={styles.drawerCta} onClick={() => setMenuOpen(false)}>
               Get started free →
@@ -166,7 +167,6 @@ export default function LandingPage() {
 
       {/* ── HERO ── */}
       <section className={styles.hero}>
-        {/* Left copy */}
         <div className={styles.heroLeft}>
           <div className={styles.badge}>
             <span className={styles.badgeDot} />
@@ -197,20 +197,15 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Right — image collage */}
         <div className={styles.heroImgs}>
           <div className={styles.imgMain}>
-            <img 
-            src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775306228/download_1_zzed97.jpg" 
-            alt="Person working out"/>
+            <img src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775306228/download_1_zzed97.jpg" alt="Person working out" />
           </div>
           <div className={styles.imgSm}>
-            <img src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775306559/download_3_b5bhm5.jpg" 
-            alt="Healthy meal" />
+            <img src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775306559/download_3_b5bhm5.jpg" alt="Healthy meal" />
           </div>
           <div className={styles.imgTiny}>
-            <img src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775306451/download_2_eug9rz.jpg" 
-            alt="Progress" />
+            <img src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775306451/download_2_eug9rz.jpg" alt="Progress" />
           </div>
           <div className={styles.chip1}>
             <span>🔥</span>
@@ -229,7 +224,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── LOGOS BAR ── */}
+      {/*LOGOS BAR*/}
       <div className={styles.logosBar}>
         <div className={styles.logosInner}>
           <span className={styles.logosLabel}>Trusted by people across Nepal</span>
@@ -241,7 +236,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* ── STATS STRIP ── */}
+      {/* STATS STRIP  */}
       <section className={styles.statsStrip}>
         <div className={styles.statsInner}>
           {stats.map(({ val, lbl }) => (
@@ -253,7 +248,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FEATURES ── */}
+      {/* FEATURES  */}
       <section className={styles.features} id="features">
         <div className={styles.inner}>
           <div className={styles.sectionHead}>
@@ -265,7 +260,6 @@ export default function LandingPage() {
               One platform that replaces your personal trainer, dietitian, and wellness app — at zero cost.
             </p>
           </div>
-
           <div className={styles.featGrid}>
             {features.map((f) => (
               <div
@@ -287,7 +281,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ── */}
+      {/* HOW IT WORKS  */}
       <section className={styles.how} id="how">
         <div className={styles.inner}>
           <div className={styles.sectionHead}>
@@ -318,7 +312,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── GALLERY ── */}
+      {/* GALLERY */}
       <section className={styles.gallery} id="gallery">
         <div className={styles.inner}>
           <div className={styles.sectionHead}>
@@ -338,7 +332,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
+      {/*  TESTIMONIALS  */}
       <section className={styles.stories} id="stories">
         <div className={styles.inner}>
           <div className={styles.testHeader}>
@@ -352,7 +346,6 @@ export default function LandingPage() {
               Real members, real transformations — no paid endorsements.
             </p>
           </div>
-
           <div className={styles.testGrid}>
             {testimonials.map((t) => (
               <div className={styles.testCard} key={t.name}>
@@ -360,7 +353,6 @@ export default function LandingPage() {
                 <p className={styles.testQuote}>"{t.quote}"</p>
                 <div className={styles.testResult}>{t.result}</div>
                 <div className={styles.testAuthor}>
-                  {/* Avatar: image with initials fallback */}
                   <div className={styles.testAvatarWrap}>
                     <img
                       src={t.avatar}
@@ -384,7 +376,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FINAL CTA ── */}
+      {/* FINAL CTA  */}
       <section className={styles.cta}>
         <img
           src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775307929/The_Olympia_Champions_Tee_-_Season_4_Drop_1_Signup_now_for_early_access_link_in_bio_nppuwx.jpg"
@@ -406,7 +398,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
+      {/* FOOTER */}
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
           <Link to="/" className={styles.footerLogo}>Fit<span>Mitra</span></Link>
