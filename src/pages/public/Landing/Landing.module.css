@@ -939,3 +939,7 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+:global([data-theme="dark"]) .footer {
+  background: #08090D;
+}
