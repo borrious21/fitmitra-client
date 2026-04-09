@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { forgotPasswordService } from "../../../services/authService";
 import styles from "./ForgotPassword.module.css";
+import ThemeToggle from "../../../components/ThemeToggle/ThemeToggle";
 
 const IcoPulse = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -34,7 +35,6 @@ const IcoLoader = () => (
   </svg>
 );
 
-// ── Component ─────────────────────────────────────────────────────────────────
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -44,10 +44,8 @@ const ForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-
     if (!email.trim()) { setError("Email is required"); return; }
     if (!/\S+@\S+\.\S+/.test(email)) { setError("Please enter a valid email address"); return; }
-
     setIsLoading(true);
     try {
       await forgotPasswordService(email);
@@ -62,35 +60,38 @@ const ForgotPassword = () => {
   return (
     <div className={styles.page}>
 
-      {/* ── LEFT PANEL ──────────────────────────────────────── */}
+      {/* NAV */}
+      <div className={styles.nav}>
+        <Link to="/" className={styles.brand}>
+          <span className={styles.brandIcon}><IcoPulse /></span>
+          <span className={styles.brandName}>FitMitra</span>
+        </Link>
+        <ThemeToggle />
+      </div>
+
+      {/* LEFT PANEL */}
       <div className={styles.leftPanel}>
         <div className={styles.glow1} />
         <div className={styles.glow2} />
         <div className={styles.glowPanel} />
-
         <div className={styles.leftContent}>
           <Link to="/" className={styles.brand}>
             <span className={styles.brandIcon}><IcoPulse /></span>
             <span className={styles.brandName}>FitMitra</span>
           </Link>
-
           <span className={styles.eyebrow}>No worries</span>
-
           <h2 className={styles.leftTitle}>
-            We've got<br />
-            <span>you covered.</span>
+            We've got<br /><span>you covered.</span>
           </h2>
-
           <p className={styles.leftDesc}>
             Forgot your password? We'll send a 6-digit reset code to your inbox
             so you can get back to training fast.
           </p>
-
           <div className={styles.leftSteps}>
             {[
-              { n: "01", title: "Enter your email",   desc: "We'll look up your FitMitra account" },
-              { n: "02", title: "Get the code",        desc: "A 6-digit OTP arrives in seconds" },
-              { n: "03", title: "Reset & continue",    desc: "Set a new password and jump back in" },
+              { n: "01", title: "Enter your email",  desc: "We'll look up your FitMitra account" },
+              { n: "02", title: "Get the code",       desc: "A 6-digit OTP arrives in seconds" },
+              { n: "03", title: "Reset & continue",   desc: "Set a new password and jump back in" },
             ].map((s, i, arr) => (
               <div className={styles.leftStep} key={i}>
                 <div className={styles.leftStepCol}>
@@ -107,7 +108,7 @@ const ForgotPassword = () => {
         </div>
       </div>
 
-      {/* ── RIGHT PANEL ─────────────────────────────────────── */}
+      {/* RIGHT PANEL */}
       <div className={styles.rightPanel}>
         <div className={styles.wrapper}>
           <div className={styles.card}>
@@ -117,12 +118,10 @@ const ForgotPassword = () => {
               <IcoArrowLeft /> Back to Sign In
             </Link>
 
-            {/* Icon */}
             <div className={styles.mailWrap}>
               <div className={styles.mailRing}><IcoMail /></div>
             </div>
 
-            {/* Header */}
             <div className={styles.header}>
               <div className={styles.logoRow}>
                 <span className={styles.logoPulse}><IcoPulse /></span>
@@ -133,7 +132,6 @@ const ForgotPassword = () => {
               </p>
             </div>
 
-            {/* Error */}
             {error && (
               <div className={styles.errorAlert}>
                 <IcoAlert />
@@ -141,7 +139,6 @@ const ForgotPassword = () => {
               </div>
             )}
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.formGroup}>
                 <label htmlFor="email" className={styles.label}>Email Address</label>
@@ -155,25 +152,18 @@ const ForgotPassword = () => {
                   className={styles.input}
                 />
               </div>
-
-              <button
-                type="submit"
-                disabled={isLoading || !email}
-                className={styles.btnPrimary}
-              >
+              <button type="submit" disabled={isLoading || !email} className={styles.btnPrimary}>
                 {isLoading
                   ? <><IcoLoader /> Sending Code...</>
                   : <><IcoMail /> Send Reset Code</>}
               </button>
             </form>
 
-            {/* Divider */}
             <div className={styles.divider}>
               <div className={styles.divLine}><div className={styles.divBorder} /></div>
               <div className={styles.divLabel}><span className={styles.divText}>Remember your password?</span></div>
             </div>
 
-            {/* Sign in link */}
             <div className={styles.linkRow}>
               <Link to="/login" className={styles.textLink}>
                 Sign in instead <IcoArrowRight />
@@ -189,7 +179,6 @@ const ForgotPassword = () => {
           </p>
         </div>
       </div>
-
     </div>
   );
 };

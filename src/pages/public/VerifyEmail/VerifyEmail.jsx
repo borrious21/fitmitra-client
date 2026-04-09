@@ -11,10 +11,10 @@ const VerifyEmail = () => {
   const location = useLocation();
   const email    = location.state?.email || "";
 
-  const [otp, setOtp]                   = useState("");
-  const [isLoading, setIsLoading]       = useState(false);
-  const [error, setError]               = useState(null);
-  const [success, setSuccess]           = useState(false);
+  const [otp, setOtp]                     = useState("");
+  const [isLoading, setIsLoading]         = useState(false);
+  const [error, setError]                 = useState(null);
+  const [success, setSuccess]             = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
 
@@ -59,7 +59,6 @@ const VerifyEmail = () => {
     }
   };
 
-  // ── Left panel — reused in both states ────────────────────
   const LeftPanel = ({ titleLine1, titleAccent, description, items }) => (
     <div className={styles.leftPanel}>
       <div className={styles.imageOverlay} />
@@ -99,7 +98,7 @@ const VerifyEmail = () => {
     </div>
   );
 
-  // ── SUCCESS STATE ──────────────────────────────────────────
+  // SUCCESS
   if (success) {
     return (
       <div className={styles.container}>
@@ -141,7 +140,7 @@ const VerifyEmail = () => {
     );
   }
 
-  // ── OTP FORM STATE ─────────────────────────────────────────
+  // OTP FORM
   return (
     <div className={styles.container}>
       <LeftPanel
@@ -189,11 +188,8 @@ const VerifyEmail = () => {
               <div className={styles.formGroup}>
                 <label className={styles.label}>Enter Verification Code</label>
                 <OtpInput
-                  length={6}
-                  value={otp}
-                  onChange={setOtp}
-                  disabled={isLoading}
-                  error={!!error}
+                  length={6} value={otp} onChange={setOtp}
+                  disabled={isLoading} error={!!error}
                 />
               </div>
               <button
@@ -229,7 +225,6 @@ const VerifyEmail = () => {
                 <><Mail className={styles.buttonIcon} /> Resend Code</>
               )}
             </button>
-
           </div>
 
           <p className={styles.footer}>

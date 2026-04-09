@@ -6,7 +6,7 @@ import {
   resendVerificationService,
   verifyEmailService,
 } from "../../../services/authService";
-import { Eye, EyeOff, Loader2, AlertCircle, Activity, Heart, Mail } from "lucide-react";
+import { Eye, EyeOff, Loader2, AlertCircle, Mail } from "lucide-react";
 import OtpInput from "../../../components/Otp/OtpInput";
 import ThemeToggle from "../../../components/ThemeToggle/ThemeToggle";
 import { tokenStore } from "../../../services/apiClient";
@@ -20,7 +20,9 @@ function resolveDestination(user, fallback) {
   return hasOnboarded ? fallback : "/onboarding";
 }
 
-const Login = () => {
+const avatarInitials = ["RK", "PS", "AM", "NK", "+"];
+
+export default function Login() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const { login, error, clearError, user, isAuthenticated, isInitializing } =
@@ -31,6 +33,8 @@ const Login = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [isLoading, setIsLoading]       = useState(false);
   const [localError, setLocalError]     = useState(null);
+  const [scrolled, setScrolled]         = useState(false);
+  const [menuOpen, setMenuOpen]         = useState(false);
 
   const [showUnverifiedPrompt, setShowUnverifiedPrompt] = useState(false);
   const [resendLoading, setResendLoading]   = useState(false);
@@ -42,24 +46,29 @@ const Login = () => {
 
   const from = location.state?.from?.pathname || "/dashboard";
 
-  useEffect(() => { clearError(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { clearError(); }, []); // eslint-disable-line
+
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated && user && !isInitializing) {
       if (!user.isVerified) return;
-      const destination = resolveDestination(user, from);
-      navigate(destination, { replace: true });
+      navigate(resolveDestination(user, from), { replace: true });
     }
   }, [isAuthenticated, user, isInitializing, navigate, from]);
 
   useEffect(() => {
     if (localError) {
       const msg = (localError?.message || String(localError)).toLowerCase();
-      const isUnverified =
+      setShowUnverifiedPrompt(
         msg.includes("verify your email") ||
         msg.includes("not verified") ||
-        msg.includes("unverified");
-      setShowUnverifiedPrompt(isUnverified);
+        msg.includes("unverified")
+      );
     } else {
       setShowUnverifiedPrompt(false);
     }
@@ -68,21 +77,15 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    if (validationErrors[name]) {
+    if (validationErrors[name])
       setValidationErrors(prev => ({ ...prev, [name]: "" }));
-    }
   };
 
   const validate = () => {
     const errors = {};
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Invalid email address";
-    }
-    if (!formData.password) {
-      errors.password = "Password is required";
-    }
+    if (!formData.email.trim())            errors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Invalid email address";
+    if (!formData.password)                errors.password = "Password is required";
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -96,9 +99,6 @@ const Login = () => {
       const { token, user: rawUser } = await loginService(formData.email, formData.password);
       login(token, rawUser);
     } catch (err) {
-      // 403 means a stale token was in localStorage — clear it silently.
-      // Do NOT call logout() here: the user has no session, so logout()
-      // fires POST /auth/logout which returns 401 and pollutes the console.
       if (err?.status === 403) tokenStore.clearAll();
       setLocalError(err);
     } finally {
@@ -130,17 +130,14 @@ const Login = () => {
     e.preventDefault();
     if (otp.length !== 6)       { setVerifyError("Please enter the complete 6-digit code"); return; }
     if (!formData.email.trim()) { setVerifyError("Email is required."); return; }
-
     setVerifyLoading(true);
     setVerifyError(null);
     setPostVerifyMessage(null);
-
     try {
       await verifyEmailService(formData.email, otp);
       setOtp("");
       setResendSuccess(false);
       setLocalError(null);
-
       try {
         setIsLoading(true);
         const { token, user: rawUser } = await loginService(formData.email, formData.password);
@@ -160,229 +157,293 @@ const Login = () => {
   const displayError    = localError || error;
   const displayErrorMsg = displayError?.message || (typeof displayError === "string" ? displayError : null);
 
+  const navItems = [
+    ["/#features", "Features"],
+    ["/#how",      "How it works"],
+    ["/#gallery",  "Gallery"],
+    ["/#stories",  "Stories"],
+  ];
+
   return (
-    <div className={styles.container}>
+    <div className={styles.page}>
 
-      <div className={styles.leftPanel}>
-        <div className={styles.imageOverlay} />
-        <div className={styles.leftContent}>
-
-          <div className={styles.brandLogo}>
-            <Activity className={styles.brandIcon} />
-            <span className={styles.brandName}>FIT<span>MITRA</span></span>
-          </div>
-
-          <h2 className={styles.leftTitle}>
-            Welcome<br />
-            <span className={styles.leftTitleAccent}>Back.</span>
-          </h2>
-          <p className={styles.leftDescription}>
-            Your fitness journey continues. Pick up right where you left off — your AI coach has been waiting.
-          </p>
-
-          <div className={styles.features}>
-            {["Track your progress", "Access your plans", "Stay motivated daily"].map((f, i) => (
-              <div className={styles.feature} key={i}>
-                <div className={styles.featureIcon}>✓</div>
-                <span>{f}</span>
-              </div>
+      {/* ── NAV (identical to Landing) ── */}
+      <nav className={`${styles.nav} ${scrolled ? styles.navScrolled : ""}`}>
+        <div className={styles.navInner}>
+          <Link to="/" className={styles.logo}>
+            Fit<span>Mitra</span>
+          </Link>
+          <ul className={styles.navLinks}>
+            {navItems.map(([href, label]) => (
+              <li key={href}><a href={href}>{label}</a></li>
             ))}
+          </ul>
+          <div className={styles.navRight}>
+            <ThemeToggle />
+            <Link to="/login"  className={`${styles.navSignin} ${styles.navActive}`}>Sign in</Link>
+            <Link to="/signup" className={styles.navCta}>Get started free</Link>
           </div>
-
-          <div className={styles.leftStats}>
-            <div className={styles.leftStat}>
-              <span className={styles.leftStatNum}>12K+</span>
-              <span className={styles.leftStatLbl}>Members</span>
+          <button
+            className={styles.burger}
+            onClick={() => setMenuOpen(p => !p)}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? "✕" : "☰"}
+          </button>
+        </div>
+        {menuOpen && (
+          <div className={styles.drawer}>
+            {navItems.map(([href, label]) => (
+              <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>
+            ))}
+            <div className={styles.drawerToggleRow}>
+              <span className={styles.drawerToggleLabel}>Dark mode</span>
+              <ThemeToggle />
             </div>
-            <div className={styles.leftStat}>
-              <span className={styles.leftStatNum}>98%</span>
-              <span className={styles.leftStatLbl}>Adherence</span>
-            </div>
-            <div className={styles.leftStat}>
-              <span className={styles.leftStatNum}>0₹</span>
-              <span className={styles.leftStatLbl}>Cost</span>
-            </div>
+            <Link to="/login"  onClick={() => setMenuOpen(false)}>Sign in</Link>
+            <Link to="/signup" className={styles.drawerCta} onClick={() => setMenuOpen(false)}>
+              Get started free →
+            </Link>
           </div>
-        </div>
-      </div>
+        )}
+      </nav>
 
-      <div className={styles.rightPanel}>
+      {/* ── HERO SPLIT ── */}
+      <section className={styles.hero}>
+        <div className={styles.heroInner}>
 
-        <div className={styles.themeToggleWrap}>
-          <ThemeToggle />
-        </div>
-
-        <div className={styles.wrapper}>
-          <div className={styles.card}>
-
-            <div className={styles.header}>
-              <div className={styles.logoWrapper}>
-                <Activity className={styles.logoIcon} />
-                <Heart className={styles.logoIconSecondary} />
-              </div>
-              <h1 className={styles.title}>Sign In</h1>
-              <p className={styles.subtitle}>Welcome back to FitMitra</p>
+          {/* LEFT — landing-page style pitch */}
+          <div className={styles.heroLeft}>
+            <div className={styles.badge}>
+              <span className={styles.badgeDot} />
+              100% Free · No credit card needed
             </div>
 
-            {postVerifyMessage && (
-              <div className={styles.successAlert}>
-                <Mail className={styles.successIcon} />
-                <p className={styles.successText}>{postVerifyMessage}</p>
-              </div>
-            )}
+            <h1 className={styles.heroH}>
+              Welcome<br />
+              <em>back to</em><br />
+              FitMitra
+            </h1>
 
-            {displayErrorMsg && !showUnverifiedPrompt && !postVerifyMessage && (
-              <div className={styles.errorAlert}>
-                <AlertCircle className={styles.errorIcon} />
-                <p className={styles.errorText}>{displayErrorMsg}</p>
-              </div>
-            )}
+            <p className={styles.heroP}>
+              Your AI fitness coach has been waiting. Pick up right where you left off —
+              workouts, meals, and progress all in sync.
+            </p>
 
-            {showUnverifiedPrompt && (
-              <div className={styles.warningAlert}>
-                <AlertCircle className={styles.warningIcon} />
-                <div className={styles.warningContent}>
-                  <p className={styles.warningText}>
-                    <strong>Email Not Verified</strong>
-                    <br />
-                    Please verify your email to log in. Click below to receive a new 6-digit code at{" "}
-                    <strong>{formData.email}</strong>.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={handleResendVerification}
-                    disabled={resendLoading}
-                    className={styles.resendLink}
-                  >
-                    {resendLoading ? (
-                      <><Loader2 className={styles.resendSpinner} /> Sending...</>
-                    ) : (
-                      <><Mail className={styles.resendIcon} /> Send Code</>
-                    )}
-                  </button>
+            <div className={styles.heroFeatures}>
+              {[
+                "Track your progress",
+                "Access your workout plans",
+                "Stay motivated daily",
+              ].map((f, i) => (
+                <div className={styles.heroFeature} key={i}>
+                  <div className={styles.heroFeatureCheck}>✓</div>
+                  <span>{f}</span>
                 </div>
-              </div>
-            )}
+              ))}
+            </div>
 
-            {resendSuccess && (
-              <div className={styles.successAlert}>
-                <div style={{ width: "100%" }}>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "1rem" }}>
-                    <Mail className={styles.successIcon} />
-                    <p className={styles.successText}>
-                      Code sent to <strong>{formData.email}</strong>! Enter it below:
+            <div className={styles.proof}>
+              <div className={styles.avatars}>
+                {avatarInitials.map((a, i) => (
+                  <div className={styles.av} key={i}>{a}</div>
+                ))}
+              </div>
+              <p className={styles.proofText}>
+                <strong>12,000+</strong> members already training smarter
+              </p>
+            </div>
+
+            <div className={styles.heroStats}>
+              {[["12K+","Members"],["98%","Adherence"],["₹0","Cost"]].map(([v, l]) => (
+                <div className={styles.heroStat} key={l}>
+                  <span className={styles.heroStatVal}>{v}</span>
+                  <span className={styles.heroStatLbl}>{l}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT — form card */}
+          <div className={styles.heroRight}>
+            <div className={styles.card}>
+
+              <div className={styles.cardHeader}>
+                <h2 className={styles.cardTitle}>Sign In</h2>
+                <p className={styles.cardSub}>Welcome back to FitMitra</p>
+              </div>
+
+              {/* Post-verify success */}
+              {postVerifyMessage && (
+                <div className={styles.alertSuccess}>
+                  <Mail size={15} className={styles.alertIcon} />
+                  <p>{postVerifyMessage}</p>
+                </div>
+              )}
+
+              {/* Generic error */}
+              {displayErrorMsg && !showUnverifiedPrompt && !postVerifyMessage && (
+                <div className={styles.alertError}>
+                  <AlertCircle size={15} className={styles.alertIcon} />
+                  <p>{displayErrorMsg}</p>
+                </div>
+              )}
+
+              {/* Unverified prompt */}
+              {showUnverifiedPrompt && (
+                <div className={styles.alertWarning}>
+                  <AlertCircle size={15} className={styles.alertIcon} />
+                  <div>
+                    <p>
+                      <strong>Email Not Verified</strong><br />
+                      Please verify your email. Send a new 6-digit code to{" "}
+                      <strong>{formData.email}</strong>.
                     </p>
-                  </div>
-                  <form onSubmit={handleVerifyOtp} style={{ marginTop: "1rem" }}>
-                    <OtpInput
-                      length={6}
-                      value={otp}
-                      onChange={setOtp}
-                      disabled={verifyLoading}
-                      error={!!verifyError}
-                    />
-                    {verifyError && (
-                      <p style={{ color: "var(--err-icon)", fontSize: "0.75rem", marginTop: "0.5rem", textAlign: "center", fontWeight: 700, fontFamily: "var(--font-mono)", letterSpacing: "0.06em" }}>
-                        {verifyError}
-                      </p>
-                    )}
                     <button
-                      type="submit"
-                      disabled={verifyLoading || otp.length !== 6}
-                      className={styles.submitButton}
-                      style={{ marginTop: "1rem" }}
+                      type="button"
+                      onClick={handleResendVerification}
+                      disabled={resendLoading}
+                      className={styles.resendBtn}
                     >
-                      {verifyLoading ? (
-                        <><Loader2 className={styles.loadingSpinner} /> Verifying...</>
-                      ) : "Verify & Sign In"}
+                      {resendLoading
+                        ? <><Loader2 size={13} className={styles.spin} /> Sending...</>
+                        : <><Mail size={13} /> Send Code</>}
                     </button>
-                    <p style={{ fontSize: "0.7rem", color: "var(--ok-text)", marginTop: "0.75rem", textAlign: "center", fontFamily: "var(--font-mono)", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-                      Prefer a separate page?{" "}
-                      <Link
-                        to="/verify-email"
-                        state={{ email: formData.email }}
-                        style={{ color: "var(--orange)", fontWeight: 700, textDecoration: "underline" }}
+                  </div>
+                </div>
+              )}
+
+              {/* OTP entry after resend */}
+              {resendSuccess && (
+                <div className={styles.alertSuccess}>
+                  <div style={{ width: "100%" }}>
+                    <div style={{ display:"flex", alignItems:"flex-start", gap:"0.625rem", marginBottom:"1rem" }}>
+                      <Mail size={15} style={{ marginTop:"2px", flexShrink:0 }} />
+                      <p>Code sent to <strong>{formData.email}</strong>! Enter it below:</p>
+                    </div>
+                    <form onSubmit={handleVerifyOtp}>
+                      <OtpInput
+                        length={6}
+                        value={otp}
+                        onChange={setOtp}
+                        disabled={verifyLoading}
+                        error={!!verifyError}
+                      />
+                      {verifyError && <p className={styles.otpError}>{verifyError}</p>}
+                      <button
+                        type="submit"
+                        disabled={verifyLoading || otp.length !== 6}
+                        className={styles.submitBtn}
+                        style={{ marginTop:"1rem" }}
                       >
-                        Go to verification page
-                      </Link>
-                    </p>
-                  </form>
+                        {verifyLoading
+                          ? <><Loader2 size={15} className={styles.spin} /> Verifying...</>
+                          : "Verify & Sign In →"}
+                      </button>
+                      <p className={styles.otpAlt}>
+                        Prefer a separate page?{" "}
+                        <Link to="/verify-email" state={{ email: formData.email }}>
+                          Go to verification page
+                        </Link>
+                      </p>
+                    </form>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <div className={styles.formGroup}>
-                <label htmlFor="email" className={styles.label}>Email Address</label>
-                <input
-                  type="email" id="email" name="email"
-                  value={formData.email} onChange={handleChange} disabled={isLoading}
-                  className={`${styles.input} ${validationErrors.email ? styles.inputError : ""}`}
-                  placeholder="you@example.com"
-                />
-                {validationErrors.email && (
-                  <p className={styles.validationError}>{validationErrors.email}</p>
-                )}
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="password" className={styles.label}>Password</label>
-                <div className={styles.passwordWrapper}>
+              {/* Main login form */}
+              <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="email" className={styles.label}>Email Address</label>
                   <input
-                    type={showPassword ? "text" : "password"}
-                    id="password" name="password"
-                    value={formData.password} onChange={handleChange} disabled={isLoading}
-                    className={`${styles.input} ${validationErrors.password ? styles.inputError : ""}`}
-                    placeholder="Enter your password"
+                    type="email" id="email" name="email"
+                    value={formData.email} onChange={handleChange}
+                    disabled={isLoading} placeholder="you@example.com"
+                    className={`${styles.input} ${validationErrors.email ? styles.inputError : ""}`}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={styles.passwordToggle}
-                    disabled={isLoading}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? <EyeOff className={styles.toggleIcon} /> : <Eye className={styles.toggleIcon} />}
-                  </button>
+                  {validationErrors.email && (
+                    <p className={styles.fieldError}>{validationErrors.email}</p>
+                  )}
                 </div>
-                {validationErrors.password && (
-                  <p className={styles.validationError}>{validationErrors.password}</p>
-                )}
-              </div>
 
-              <div className={styles.forgotPasswordWrapper}>
-                <Link to="/forgot-password" className={styles.forgotPasswordLink}>
-                  Forgot password?
-                </Link>
-              </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="password" className={styles.label}>Password</label>
+                  <div className={styles.passwordWrap}>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id="password" name="password"
+                      value={formData.password} onChange={handleChange}
+                      disabled={isLoading} placeholder="Enter your password"
+                      className={`${styles.input} ${validationErrors.password ? styles.inputError : ""}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(p => !p)}
+                      className={styles.eyeBtn}
+                      disabled={isLoading}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+                  </div>
+                  {validationErrors.password && (
+                    <p className={styles.fieldError}>{validationErrors.password}</p>
+                  )}
+                </div>
 
-              <button type="submit" disabled={isLoading} className={styles.submitButton}>
-                {isLoading ? (
-                  <><Loader2 className={styles.loadingSpinner} /> Signing in...</>
-                ) : (
-                  <><Activity className={styles.buttonIcon} /> Sign In</>
-                )}
-              </button>
-            </form>
+                <div className={styles.forgotRow}>
+                  <Link to="/forgot-password" className={styles.forgotLink}>
+                    Forgot password?
+                  </Link>
+                </div>
 
-            <div className={styles.divider}>
-              <div className={styles.dividerLine}>
-                <div className={styles.dividerBorder} />
-              </div>
-              <div className={styles.dividerText}>
-                <span className={styles.dividerTextInner}>Don't have an account?</span>
-              </div>
+                <button type="submit" disabled={isLoading} className={styles.submitBtn}>
+                  {isLoading
+                    ? <><Loader2 size={16} className={styles.spin} /> Signing in...</>
+                    : "Sign In →"}
+                </button>
+              </form>
+
+              <p className={styles.switchText}>
+                Don't have an account?{" "}
+                <Link to="/signup" className={styles.switchLink}>Create account →</Link>
+              </p>
             </div>
-
-            <div className={styles.signupLinkWrapper}>
-              <Link to="/signup" className={styles.signupLink}>Create account →</Link>
-            </div>
-
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* ── STATS STRIP (identical to Landing) ── */}
+      <section className={styles.statsStrip}>
+        <div className={styles.statsInner}>
+          {[
+            { val: "12K+",   lbl: "Active members" },
+            { val: "98%",    lbl: "Plan adherence" },
+            { val: "4,800+", lbl: "Workouts generated" },
+            { val: "₹0",     lbl: "Cost, always" },
+          ].map(({ val, lbl }) => (
+            <div className={styles.statItem} key={lbl}>
+              <div className={styles.statVal}>{val}</div>
+              <div className={styles.statLbl}>{lbl}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FOOTER (identical to Landing) ── */}
+      <footer className={styles.footer}>
+        <div className={styles.footerInner}>
+          <Link to="/" className={styles.footerLogo}>Fit<span>Mitra</span></Link>
+          <p className={styles.footerTagline}>Built for Nepal. Free forever.</p>
+          <div className={styles.footerLinks}>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Contact</a>
+          </div>
+          <p className={styles.footerCopy}>© 2025 FitMitra. All rights reserved.</p>
+        </div>
+      </footer>
+
     </div>
   );
-};
-
-export default Login;
+}

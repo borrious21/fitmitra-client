@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { verifyResetOtpService, resetPasswordService } from "../../../services/authService";
 import OtpInput from "../../../components/Otp/OtpInput";
 import styles from "./ResetPassword.module.css";
+import ThemeToggle from "../../../components/ThemeToggle/ThemeToggle";
 
 const IcoPulse = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -55,13 +56,12 @@ const IcoShield = () => (
   </svg>
 );
 
-// ── Component ─────────────────────────────────────────────────────────────────
 const ResetPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const [email, setEmail] = useState(location.state?.email || "");
-  const [step, setStep] = useState(1); // 1 = verify OTP, 2 = set new password
+  const [step, setStep] = useState(1);
   const [otp, setOtp] = useState("");
   const [formData, setFormData] = useState({ password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -106,14 +106,12 @@ const ResetPassword = () => {
     return "Strong";
   };
 
-  // ── Step 1: Verify OTP ──────────────────────────────────────────────────────
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setError(null);
     if (!email.trim()) { setError("Email is required"); return; }
     if (!/\S+@\S+\.\S+/.test(email)) { setError("Please enter a valid email address"); return; }
     if (otp.length !== 6) { setError("Please enter the complete 6-digit code"); return; }
-
     setIsLoading(true);
     try {
       await verifyResetOtpService(email, otp);
@@ -125,7 +123,6 @@ const ResetPassword = () => {
     }
   };
 
-  // ── Step 2: Reset password ──────────────────────────────────────────────────
   const validatePassword = () => {
     const errors = {};
     if (!formData.password) errors.password = "Password is required";
@@ -163,11 +160,10 @@ const ResetPassword = () => {
     }
   };
 
-  // ── Left panel content per step ─────────────────────────────────────────────
   const leftContent = {
     success: {
       eyebrow: "All done",
-      title: <>"Welcome<br /><span>back.</span>"</>,
+      title: <>Welcome<br /><span>back.</span></>,
       desc: "Your password has been reset. You're all set to continue your fitness journey.",
       steps: ["Secured & protected", "Ready to sign in", "Back on track"],
     },
@@ -187,7 +183,16 @@ const ResetPassword = () => {
 
   const lc = success ? leftContent.success : leftContent[step];
 
-  // ── Shared left panel ───────────────────────────────────────────────────────
+  const Nav = () => (
+    <div className={styles.nav}>
+      <Link to="/" className={styles.brand}>
+        <span className={styles.brandIcon}><IcoPulse /></span>
+        <span className={styles.brandName}>FitMitra</span>
+      </Link>
+      <ThemeToggle />
+    </div>
+  );
+
   const LeftPanel = () => (
     <div className={styles.leftPanel}>
       <div className={styles.glow1} />
@@ -218,19 +223,18 @@ const ResetPassword = () => {
     </div>
   );
 
-  // ── Success state ───────────────────────────────────────────────────────────
+  // SUCCESS
   if (success) {
     return (
       <div className={styles.page}>
+        <Nav />
         <LeftPanel />
         <div className={styles.rightPanel}>
           <div className={styles.wrapper}>
             <div className={styles.card}>
               <div className={styles.cardGlow} />
               <div className={styles.successIconWrap}>
-                <div className={styles.successRing}>
-                  <IcoCheck />
-                </div>
+                <div className={styles.successRing}><IcoCheck /></div>
               </div>
               <div className={styles.header}>
                 <div className={styles.logoRow}>
@@ -256,10 +260,11 @@ const ResetPassword = () => {
     );
   }
 
-  // ── Step 1: OTP entry ───────────────────────────────────────────────────────
+  // STEP 1
   if (step === 1) {
     return (
       <div className={styles.page}>
+        <Nav />
         <LeftPanel />
         <div className={styles.rightPanel}>
           <div className={styles.wrapper}>
@@ -304,7 +309,6 @@ const ResetPassword = () => {
                     className={styles.input}
                   />
                 </div>
-
                 <div className={styles.formGroup}>
                   <label className={styles.label}>6-Digit Code</label>
                   <OtpInput
@@ -312,7 +316,6 @@ const ResetPassword = () => {
                     disabled={isLoading} error={!!error}
                   />
                 </div>
-
                 <button
                   type="submit"
                   disabled={isLoading || !email || otp.length !== 6}
@@ -344,9 +347,10 @@ const ResetPassword = () => {
     );
   }
 
-  // ── Step 2: New password ────────────────────────────────────────────────────
+  // STEP 2
   return (
     <div className={styles.page}>
+      <Nav />
       <LeftPanel />
       <div className={styles.rightPanel}>
         <div className={styles.wrapper}>
@@ -381,7 +385,6 @@ const ResetPassword = () => {
             )}
 
             <form onSubmit={handleResetPassword} className={styles.form}>
-              {/* New password */}
               <div className={styles.formGroup}>
                 <label htmlFor="password" className={styles.label}>New Password</label>
                 <div className={styles.pwWrap}>
@@ -403,7 +406,6 @@ const ResetPassword = () => {
                     {showPassword ? <IcoEyeOff /> : <IcoEye />}
                   </button>
                 </div>
-
                 {formData.password && (
                   <div className={styles.strengthRow}>
                     <div className={styles.strengthTrack}>
@@ -422,7 +424,6 @@ const ResetPassword = () => {
                 )}
               </div>
 
-              {/* Confirm password */}
               <div className={styles.formGroup}>
                 <label htmlFor="confirmPassword" className={styles.label}>Confirm New Password</label>
                 <div className={styles.pwWrap}>

@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import styles from "./VerifyPendingEmail.module.css";
+import ThemeToggle from "../../../components/ThemeToggle/ThemeToggle";
 
 const IcoPulse = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -32,7 +33,6 @@ const IcoStar = () => (
   </svg>
 );
 
-// ── Component ─────────────────────────────────────────────────────────────────
 const VerifyEmailPending = () => {
   const location = useLocation();
   const email = location.state?.email || "your email";
@@ -49,31 +49,33 @@ const VerifyEmailPending = () => {
   return (
     <div className={styles.page}>
 
-      {/* ── LEFT PANEL ──────────────────────────────────────── */}
+      {/* NAV */}
+      <div className={styles.nav}>
+        <Link to="/" className={styles.brand}>
+          <span className={styles.brandIcon}><IcoPulse /></span>
+          <span className={styles.brandName}>FitMitra</span>
+        </Link>
+        <ThemeToggle />
+      </div>
+
+      {/* LEFT PANEL */}
       <div className={styles.leftPanel}>
         <div className={styles.glow1} />
         <div className={styles.glow2} />
         <div className={styles.glowPanel} />
-
         <div className={styles.leftContent}>
-
           <Link to="/" className={styles.brand}>
             <span className={styles.brandIcon}><IcoPulse /></span>
             <span className={styles.brandName}>FitMitra</span>
           </Link>
-
           <span className={styles.eyebrow}>Almost there</span>
-
           <h2 className={styles.leftTitle}>
-            One step<br />
-            <span>away.</span>
+            One step<br /><span>away.</span>
           </h2>
-
           <p className={styles.leftDesc}>
             We've sent a 6-digit OTP to your inbox. Enter it to unlock your
             personalised fitness journey — workouts, nutrition &amp; more.
           </p>
-
           <div className={styles.leftSteps}>
             {leftSteps.map((s, i) => (
               <div className={styles.leftStep} key={i}>
@@ -88,11 +90,10 @@ const VerifyEmailPending = () => {
               </div>
             ))}
           </div>
-
         </div>
       </div>
 
-      {/* ── RIGHT PANEL ─────────────────────────────────────── */}
+      {/* RIGHT PANEL */}
       <div className={styles.rightPanel}>
         <div className={styles.wrapper}>
           <div className={styles.card}>
@@ -178,7 +179,6 @@ const VerifyEmailPending = () => {
           </p>
         </div>
       </div>
-
     </div>
   );
 };
