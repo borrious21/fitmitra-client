@@ -12,8 +12,7 @@ const NAV = [
   { path: "/admin/exercises",     label: "Exercises",     icon: "💪"               },
   { path: "/admin/plans",         label: "Plans",         icon: "📋"               },
   { path: "/admin/logs",          label: "Logs",          icon: "📝"               },
-  { path: "/admin/notifications", label: "Notifications", icon: "🔔"               },
-  { path: "/admin/wellness",      label: "Wellness",      icon: "🧘"               }, 
+  { path: "/admin/notifications", label: "Notifications", icon: "🔔"               }
 ];
 
 function Avatar({ name, url, size = 34 }) {
@@ -44,7 +43,6 @@ export default function AdminLayout() {
   const [authUser,  setAuthUser]  = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Decode JWT for admin name/avatar
   useEffect(() => {
     try {
       const token = localStorage.getItem("token") ?? localStorage.getItem("accessToken");
@@ -83,7 +81,7 @@ export default function AdminLayout() {
         <div className={styles.mobileOverlay} onClick={() => setMobileOpen(false)} />
       )}
 
-      {/* ── Sidebar ──────────────────────────────────────────────────────── */}
+      {/* Sidebar */}
       <aside className={[
         styles.sidebar,
         collapsed   ? styles.collapsed   : "",
@@ -173,7 +171,7 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      {/* ── Main content area ─────────────────────────────────────────────── */}
+      {/* Main content area  */}
       <div className={[styles.main, collapsed ? styles.mainCollapsed : ""].join(" ")}>
 
         {/* Top bar */}

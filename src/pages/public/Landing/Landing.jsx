@@ -1,417 +1,335 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import styles from "./Landing.module.css";
-import ThemeToggle from "../../../components/ThemeToggle/ThemeToggle";
+import { CheckCircle2, User, Camera, Bell, Star, ArrowRight, Zap, Smartphone, UserPlus, Dumbbell, TrendingUp } from "lucide-react";
+import BackgroundVideo from "../../../components/BackgroundVideo/BackgroundVideo";
 
-const features = [
-  {
-    img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307047/Unlock_your_potential_with_every_drop_of_sweat__Embrace_the_grind_push_your_limits_and_rise_stronger_with_Beldt_Labs_by_your_side.__.___lrqdxt.jpg",
-    imgAlt: "Person doing a workout",
-    icon: "⚡",
-    title: "Adaptive AI Workouts",
-    desc: "Your plan adjusts in real-time to your energy, schedule, and progress. Every session is uniquely built for you.",
-    tall: true,
-  },
-  {
-    img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307130/Healthy_Grilled_Chicken_Rice_Bowl_2026_High_Protein_Clean_Eating_Meal_pdsywj.jpg",
-    imgAlt: "Healthy Nepali meal",
-    icon: "🥗",
-    title: "Smart Nutrition Plans",
-    desc: "Calorie targets, macro splits, and full meal plans built around your goal, diet type, and Nepali food preferences.",
-    tall: false,
-  },
-  {
-    img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307234/baki_iqgyn4.jpg",
-    imgAlt: "Progress tracking chart",
-    icon: "📈",
-    title: "Progress Tracking",
-    desc: "Visual charts, streak counters, and milestone achievements that keep you motivated week after week.",
-    tall: false,
-  },
-];
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+};
 
-const steps = [
-  {
-    num: "01",
-    emoji: "👤",
-    img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307315/Thomas_Roccia_fr0gger__on_X_frl7bn.jpg",
-    title: "Build your profile",
-    desc: "Share your goals, fitness level, and dietary preferences. Takes under 3 minutes.",
-  },
-  {
-    num: "02",
-    emoji: "⚡",
-    img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307382/AI_Post_hq9i1m.jpg",
-    title: "Get your AI plan",
-    desc: "A personalised workout schedule and nutrition plan, designed for your life — generated instantly.",
-  },
-  {
-    num: "03",
-    emoji: "📈",
-    img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307421/Technology_tracks_your_progress_but_only_your_determination_powers_the_journey_bkv0h1.jpg",
-    title: "Track and evolve",
-    desc: "Log sessions, watch your progress, and let the AI refine your plan every week.",
-  },
-];
-
-const testimonials = [
-  {
-    quote: "FitMitra felt like having a personal trainer AND nutritionist in my pocket. The AI adapts before I even realise I need it.",
-    result: "−14 kg",
-    name: "Priya Sharma",
-    role: "5 months · Weight loss",
-    initials: "PS",
-    avatar: "/images/avatar-priya.jpg",
-  },
-  {
-    quote: "The macro-tracking is insanely accurate. Five apps before this — none came close to this level of personalisation.",
-    result: "+8 kg muscle",
-    name: "Arjun Mehta",
-    role: "Lean muscle gain",
-    initials: "AM",
-    avatar: "/images/avatar-arjun.jpg",
-  },
-  {
-    quote: "Couch to half-marathon in 16 weeks. The streak feature carried me through the hardest days when I wanted to quit.",
-    result: "21 km done",
-    name: "Neha Kapoor",
-    role: "Marathon finisher",
-    initials: "NK",
-    avatar: "/images/avatar-neha.jpg",
-  },
-];
-
-const gallery = [
-  { img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307478/Mais_conte%C3%BAdos_como_esse__Instagram__oleal_7_TikTok__oleal_7_A_jornada_continua_l%C3%A1__crxp6g.jpg", alt: "Outdoor running in Kathmandu" },
-  { img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307597/download_4_s7uoaq.jpg", alt: "Home workout session" },
-  { img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307636/Paleo_Grilled_Chicken_Cobb_Salad_ebdgep.jpg", alt: "Healthy meal prep" },
-  { img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307740/My-project-2022-03-02T100307.695_mhvzj4.webp", alt: "Yoga and stretching" },
-  { img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307784/Podcast_187__Improving_Strength_Durability_With_the_Kabuki_Movement_System_zrga26.jpg", alt: "Weight training" },
-  { img: "https://res.cloudinary.com/dir5oumz5/image/upload/v1775307822/Stronger_Together_dx06mf.jpg", alt: "Community workout" },
-];
-
-const stats = [
-  { val: "12K+",   lbl: "Active members" },
-  { val: "98%",    lbl: "Plan adherence" },
-  { val: "4,800+", lbl: "Workouts generated" },
-  { val: "₹0",     lbl: "Cost, always" },
-];
-
-const cities = ["Kathmandu", "Pokhara", "Biratnagar", "Lalitpur", "Chitwan"];
-const avatarInitials = ["RK", "PS", "AM", "NK", "+"];
+const stagger = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.12 } }
+};
 
 export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const heroRef = useRef(null);
+  const featRef = useRef(null);
+  const howRef = useRef(null);
+  const { scrollYProgress: heroOuterScroll } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+  const heroImgY = useTransform(heroOuterScroll, [0, 1], [0, 120]);
+  const heroTextY = useTransform(heroOuterScroll, [0, 1], [0, -40]);
+  const heroBadgeY = useTransform(heroOuterScroll, [0, 1], [0, -80]);
+  const { scrollYProgress: featScroll } = useScroll({
+    target: featRef,
+    offset: ["start end", "end start"]
+  });
+  const featH2Y = useTransform(featScroll, [0, 0.5], [60, 0]);
+  const bento1Y = useTransform(featScroll, [0.1, 0.8], [140, -40]); 
+  const bento2Y = useTransform(featScroll, [0.15, 0.85], [180, 20]); 
+  const bento3Y = useTransform(featScroll, [0.2, 0.9], [100, -60]); 
+  const bento4Y = useTransform(featScroll, [0.25, 0.95], [200, -20]); 
 
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
+  const { scrollYProgress: howScroll } = useScroll({
+    target: howRef,
+    offset: ["start 70%", "end 80%"]
+  });
+  const lineScale = useTransform(howScroll, [0, 1], [0, 1]);
 
   return (
     <div className={styles.page}>
+      <BackgroundVideo src="https://res.cloudinary.com/dir5oumz5/video/upload/v1775957129/auth_bg_duj78f.mp4" opacity={0.3} />
 
-      {/* ── NAV ── */}
-      <nav className={`${styles.nav} ${scrolled ? styles.navScrolled : ""}`}>
-        <div className={styles.navInner}>
-          <Link to="/" className={styles.logo}>
-            Fit<span>Mitra</span>
-          </Link>
-          <ul className={styles.navLinks}>
-            {[
-              ["#features", "Features"],
-              ["#how",      "How it works"],
-              ["#gallery",  "Gallery"],
-              ["#stories",  "Stories"],
-            ].map(([href, label]) => (
-              <li key={href}><a href={href}>{label}</a></li>
-            ))}
-          </ul>
-          <div className={styles.navRight}>
-            <ThemeToggle />
-            <Link to="/login"  className={styles.navSignin}>Sign in</Link>
-            <Link to="/signup" className={styles.navCta}>Get started free</Link>
-          </div>
-          <button
-            className={styles.burger}
-            onClick={() => setMenuOpen((p) => !p)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? "✕" : "☰"}
-          </button>
-        </div>
+      <div className={styles.contentWrapper}>
 
-        {menuOpen && (
-          <div className={styles.drawer}>
-            {[
-              ["#features", "Features"],
-              ["#how",      "How it works"],
-              ["#gallery",  "Gallery"],
-              ["#stories",  "Stories"],
-            ].map(([href, label]) => (
-              <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>
-            ))}
-            <div className={styles.drawerToggleRow}>
-              <span className={styles.drawerToggleLabel}>Dark mode</span>
-              <ThemeToggle />
-            </div>
-            <Link to="/login"  onClick={() => setMenuOpen(false)}>Sign in</Link>
-            <Link to="/signup" className={styles.drawerCta} onClick={() => setMenuOpen(false)}>
-              Get started free →
+        {/* ── NAV ── */}
+        <nav className={styles.nav}>
+          <div className={`${styles.inner} ${styles.navInner}`}>
+            <Link to="/" className={styles.logo}>
+              <div className={styles.logoIcon} />
+              FitMitra
             </Link>
-          </div>
-        )}
-      </nav>
-
-      {/* ── HERO ── */}
-      <section className={styles.hero}>
-        <div className={styles.heroLeft}>
-          <div className={styles.badge}>
-            <span className={styles.badgeDot} />
-            100% Free · No credit card needed
-          </div>
-          <h1 className={styles.heroH}>
-            Your personal<br />
-            <em>AI fitness coach</em><br />
-            for Nepal
-          </h1>
-          <p className={styles.heroP}>
-            FitMitra gives you personalised workout plans, smart meal suggestions,
-            and real progress tracking — completely free, forever.
-          </p>
-          <div className={styles.heroActions}>
-            <Link to="/signup" className={styles.btnPrimary}>Start for free →</Link>
-            <a href="#how" className={styles.btnGhost}>See how it works</a>
-          </div>
-          <div className={styles.proof}>
-            <div className={styles.avatars}>
-              {avatarInitials.map((a, i) => (
-                <div className={styles.av} key={i}>{a}</div>
-              ))}
-            </div>
-            <p className={styles.proofText}>
-              <strong>12,000+</strong> members already training smarter
-            </p>
-          </div>
-        </div>
-
-        <div className={styles.heroImgs}>
-          <div className={styles.imgMain}>
-            <img src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775306228/download_1_zzed97.jpg" alt="Person working out" />
-          </div>
-          <div className={styles.imgSm}>
-            <img src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775306559/download_3_b5bhm5.jpg" alt="Healthy meal" />
-          </div>
-          <div className={styles.imgTiny}>
-            <img src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775306451/download_2_eug9rz.jpg" alt="Progress" />
-          </div>
-          <div className={styles.chip1}>
-            <span>🔥</span>
-            <div>
-              <strong>−3.2 kg</strong>
-              <span>avg. monthly loss</span>
+            <ul className={styles.navLinks}>
+              <li><a href="#home">Home</a></li>
+              <li><a href="#features">Features</a></li>
+              <li><a href="#community">How it Works</a></li>
+            </ul>
+            <div className={styles.navRight}>
+              <Link to="/login" className={styles.btnOutline}>Log In</Link>
+              <Link to="/signup" className={styles.btnPrimary}>Get Started</Link>
             </div>
           </div>
-          <div className={styles.chip2}>
-            <span>✅</span>
-            <div>
-              <strong>Workout logged</strong>
-              <span>+480 kcal burned</span>
+        </nav>
+
+        {/* ── HERO ── */}
+        <section className={styles.hero} id="home" ref={heroRef}>
+          <div className={`${styles.inner} ${styles.heroInner}`}>
+            <motion.div
+              style={{ y: heroTextY }}
+              className={styles.heroLeft}
+              initial="hidden"
+              animate="visible"
+              variants={stagger}
+            >
+              <motion.div variants={fadeUp} style={{ y: heroBadgeY }} className={styles.heroBadge}>
+                <Zap size={12} />
+                #1 Smart Fitness Platform
+              </motion.div>
+
+              <motion.h1 variants={fadeUp} className={styles.heroH}>
+                { "Train Smarter,".split(" ").map((w,i) => (
+                  <motion.span key={i} initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} transition={{delay: i*0.1 + 0.5}} style={{display:'inline-block', marginRight:'0.3rem'}}>{w}</motion.span>
+                ))}
+                <span className={styles.accent}>
+                  { "Live Better.".split(" ").map((w,i) => (
+                    <motion.span key={i} initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} transition={{delay: i*0.1 + 0.8}} style={{display:'inline-block', marginRight:'0.3rem'}}>{w}</motion.span>
+                  ))}
+                </span>
+              </motion.h1>
+
+              <motion.p variants={fadeUp} className={styles.heroP}>
+                Personalized workouts, AI-powered plans, and community support — all in one premium fitness experience.
+              </motion.p>
+
+              <motion.div variants={fadeUp} className={styles.heroActions}>
+                <Link to="/signup" className={styles.btnPrimary}>
+                  Start for Free <ArrowRight size={16} />
+                </Link>
+                <Link to="/login" className={styles.btnOutline}>
+                  Sign In
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            <div className={styles.heroRight}>
+              <motion.img
+                style={{ y: heroImgY }}
+                src="https://res.cloudinary.com/dir5oumz5/image/upload/v1776733193/dark_mockup_kbm8bi.png"
+                alt="FitMitra App Mockup"
+                className={styles.heroImage}
+              />
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/*LOGOS BAR*/}
-      <div className={styles.logosBar}>
-        <div className={styles.logosInner}>
-          <span className={styles.logosLabel}>Trusted by people across Nepal</span>
-          <div className={styles.logosItems}>
-            {cities.map((c) => (
-              <span className={styles.logoCity} key={c}>{c}</span>
-            ))}
-          </div>
-        </div>
-      </div>
+        {/* ── FEATURES ── */}
+        <section className={styles.features} id="features" ref={featRef}>
+          <div className={styles.inner}>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={stagger}
+            >
+              <motion.div variants={fadeUp} className={styles.sectionTag}>
+                <Zap size={12} /> Our Features
+              </motion.div>
+              <motion.h2 variants={fadeUp} style={{ y: featH2Y }} className={styles.sectionH}>
+                Everything you need to crush your goals
+              </motion.h2>
+              <motion.p variants={fadeUp} className={styles.sectionP}>
+                Built for athletes at every level — from beginners to pros, FitMitra adapts to you.
+              </motion.p>
 
-      {/* STATS STRIP  */}
-      <section className={styles.statsStrip}>
-        <div className={styles.statsInner}>
-          {stats.map(({ val, lbl }) => (
-            <div className={styles.statItem} key={lbl}>
-              <div className={styles.statVal}>{val}</div>
-              <div className={styles.statLbl}>{lbl}</div>
-            </div>
-          ))}
-        </div>
-      </section>
+              <motion.div className={styles.bentoGrid}>
+                {/* LARGE FEATURE */}
+                <motion.div variants={fadeUp} style={{ y: bento1Y }} className={`${styles.bentoCard} ${styles.bentoMain}`}>
+                  <div className={styles.featIconWrap}><User size={24} /></div>
+                  <h3 className={styles.featTitle}>AI-Personalized Journey</h3>
+                  <p className={styles.featText}>Our proprietary algorithms adapt your workout plan daily based on heart rate, recovery metrics, and performance trends. It's like having a world-class coach in your pocket 24/7.</p>
+                  <div className={styles.bentoGraphic}>
+                    <div className={styles.pulseRing} />
+                    <TrendingUp size={120} color="var(--neon)" opacity={0.15} />
+                  </div>
+                </motion.div>
 
-      {/* FEATURES  */}
-      <section className={styles.features} id="features">
-        <div className={styles.inner}>
-          <div className={styles.sectionHead}>
-            <p className={styles.sectionTag}>What FitMitra does</p>
-            <h2 className={styles.sectionTitle}>
-              Everything your body needs,<br />all in one place
-            </h2>
-            <p className={styles.sectionSub}>
-              One platform that replaces your personal trainer, dietitian, and wellness app — at zero cost.
-            </p>
-          </div>
-          <div className={styles.featGrid}>
-            {features.map((f) => (
-              <div
-                key={f.title}
-                className={`${styles.featCard} ${f.tall ? styles.featTall : ""}`}
-              >
-                <div className={styles.featImgWrap}>
-                  <img className={styles.featImg} src={f.img} alt={f.imgAlt} />
-                  <div className={styles.featImgOverlay} />
-                </div>
-                <div className={styles.featBody}>
-                  <div className={styles.featIcon}>{f.icon}</div>
-                  <h3 className={styles.featTitle}>{f.title}</h3>
-                  <p className={styles.featDesc}>{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                {/* SENSORS */}
+                <motion.div variants={fadeUp} style={{ y: bento2Y }} className={styles.bentoCard}>
+                  <div className={styles.featIconWrap}><Camera size={24} /></div>
+                  <h3 className={styles.featTitle}>Progress Monitoring</h3>
+                  <p className={styles.featText}>Real-time tracking of every rep, calorie, and heartbeat with stunning visuals.</p>
+                </motion.div>
 
-      {/* HOW IT WORKS  */}
-      <section className={styles.how} id="how">
-        <div className={styles.inner}>
-          <div className={styles.sectionHead}>
-            <p className={styles.sectionTag}>Simple as it gets</p>
-            <h2 className={styles.sectionTitle}>
-              From sign-up to first sweat<br />in minutes
-            </h2>
-          </div>
-          <div className={styles.howGrid}>
-            {steps.map((s) => (
-              <div className={styles.howCard} key={s.num}>
-                <div className={styles.howImgWrap}>
-                  <img src={s.img} alt={s.title} className={styles.howImg} />
-                  <div className={styles.howNumBadge}>{s.num}</div>
-                </div>
-                <div className={styles.howBody}>
-                  <span className={styles.howEmoji}>{s.emoji}</span>
-                  <h3 className={styles.howTitle}>{s.title}</h3>
-                  <p className={styles.howDesc}>{s.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className={styles.howCta}>
-            <Link to="/signup" className={styles.btnPrimary}>Start free now →</Link>
-            <p className={styles.howNote}>No credit card. No trial. Always free.</p>
-          </div>
-        </div>
-      </section>
+                {/* STATS INTEGRATED */}
+                <motion.div variants={fadeUp} style={{ y: bento3Y }} className={`${styles.bentoCard} ${styles.bentoStats}`}>
+                  <div className={styles.statMini}>
+                    <span className={styles.statNum}>100K+</span>
+                    <span className={styles.statLabel}>Global Athletes</span>
+                  </div>
+                  <div className={styles.avatarMiniRow}>
+                    {[
+                      { i: 'KM', c: '#FF5C1A' }, { i: 'SR', c: '#8b5cf6' },
+                      { i: 'JP', c: '#00C8E0' }, { i: 'AP', c: '#CCFF00' }
+                    ].map(({ i, c }) => (
+                      <div key={i} style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)', marginLeft: '-12px', background: c, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 800, color: '#0b0d17' }}>{i}</div>
+                    ))}
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)', marginLeft: '-12px', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.55rem', fontWeight: 800 }}>+99K</div>
+                  </div>
+                </motion.div>
 
-      {/* GALLERY */}
-      <section className={styles.gallery} id="gallery">
-        <div className={styles.inner}>
-          <div className={styles.sectionHead}>
-            <p className={styles.sectionTag}>Community</p>
-            <h2 className={styles.sectionTitle}>Real people, real journeys</h2>
+                {/* WIDE FOOTER FEATURE */}
+                <motion.div variants={fadeUp} style={{ y: bento4Y }} className={`${styles.bentoCard} ${styles.bentoWide}`}>
+                   <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                      <div className={styles.featIconWrap}><Bell size={24} /></div>
+                      <div>
+                        <h3 className={styles.featTitle}>Dynamic Community</h3>
+                        <p className={styles.featText}>Connect with thousands of motivated members. Share achievements, join challenges, and stay accountable with real-time feedback.</p>
+                      </div>
+                   </div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
           </div>
-        </div>
-        <div className={styles.galleryGrid}>
-          {gallery.map((g, i) => (
-            <div className={styles.galleryItem} key={i}>
-              <img src={g.img} alt={g.alt} />
-              <div className={styles.galleryOverlay}>
-                <span>{g.alt}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+        </section>
 
-      {/*  TESTIMONIALS  */}
-      <section className={styles.stories} id="stories">
-        <div className={styles.inner}>
-          <div className={styles.testHeader}>
-            <div>
-              <p className={styles.sectionTag}>Real results</p>
-              <h2 className={styles.sectionTitle}>
-                The proof is in<br />the progress
+        {/* ── HOW IT WORKS ── */}
+        <section className={styles.how} id="community" ref={howRef}>
+          <div className={styles.inner}>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              className={styles.howHeader}
+            >
+              <div className={styles.sectionTag} style={{ justifyContent: 'center' }}><Zap size={12} /> How To Start</div>
+              <h2 className={styles.sectionH} style={{ margin: '0 auto', textAlign: 'center' }}>
+                Getting started is simple
               </h2>
-            </div>
-            <p className={styles.testNote}>
-              Real members, real transformations — no paid endorsements.
-            </p>
+              <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem 0' }}>
+                {[
+                  { i: 'AR', c: '#FF5C1A' }, { i: 'PK', c: '#8b5cf6' }, { i: 'SM', c: '#00C8E0' }
+                ].map(({ i, c }, idx) => (
+                  <div key={i} style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)', marginLeft: idx === 0 ? 0 : -12, background: c, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 800, color: '#0b0d17' }}>{i}</div>
+                ))}
+              </div>
+              <p style={{ textAlign: 'center', maxWidth: 480, margin: '1rem auto 0' }}>
+                Four steps to a fitter, stronger and healthier you.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={stagger}
+              className={styles.howTimeline}
+            >
+              {[
+                { icon: <Smartphone size={32} />, title: "Sign Up", text: "Create your free account" },
+                { icon: <UserPlus size={32} />, title: "Profile", text: "Set your AI fitness goals" },
+                { icon: <Dumbbell size={32} />, title: "Train", text: "Follow guided sessions" },
+                { icon: <TrendingUp size={32} />, title: "Evolve", text: "Track growth & reach pro" },
+              ].map((s, i) => (
+                <motion.div key={i} variants={fadeUp} className={styles.howStep}>
+                  <div className={styles.stepHeader}>
+                    <div className={styles.stepNum}>{i + 1}</div>
+                    <div className={styles.stepLine}>
+                       <motion.div 
+                        className={styles.lineFill} 
+                        style={{ scaleX: lineScale, transformOrigin: 'left' }} 
+                       />
+                    </div>
+                  </div>
+                  <div className={styles.stepBody}>
+                    <div className={styles.stepIcon}>{s.icon}</div>
+                    <h4 className={styles.howTitle}>{s.title}</h4>
+                    <p className={styles.howText}>{s.text}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
-          <div className={styles.testGrid}>
-            {testimonials.map((t) => (
-              <div className={styles.testCard} key={t.name}>
-                <div className={styles.stars}>★★★★★</div>
-                <p className={styles.testQuote}>"{t.quote}"</p>
-                <div className={styles.testResult}>{t.result}</div>
-                <div className={styles.testAuthor}>
-                  <div className={styles.testAvatarWrap}>
-                    <img
-                      src={t.avatar}
-                      alt={t.name}
-                      className={styles.testAvatarImg}
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                        e.currentTarget.nextElementSibling.style.display = "flex";
-                      }}
-                    />
-                    <div className={styles.testAvatarFallback}>{t.initials}</div>
-                  </div>
-                  <div>
-                    <div className={styles.testName}>{t.name}</div>
-                    <div className={styles.testRole}>{t.role}</div>
-                  </div>
+        </section>
+
+        {/* ── CTA ── */}
+        <section className={styles.cta}>
+          <div className={styles.inner}>
+            <motion.div
+              className={styles.ctaBox}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className={styles.ctaH}>Ready to Transform?</h2>
+              <p className={styles.ctaP}>
+                Join 100,000+ people achieving their fitness goals with FitMitra. Start free — no credit card required.
+              </p>
+              <div className={styles.ctaActions}>
+                <Link to="/signup" className={styles.btnPrimary}>
+                  Start for Free <ArrowRight size={16} />
+                </Link>
+                <Link to="/login" className={styles.btnOutline}>I already have an account</Link>
+              </div>
+              <div className={styles.avatarStack}>
+                <div className={styles.avatarRow}>
+                  {[
+                    { i: 'AR', c: '#FF5C1A' }, { i: 'PK', c: '#8b5cf6' },
+                    { i: 'SM', c: '#00C8E0' }, { i: 'RJ', c: '#CCFF00' }, { i: 'VT', c: '#ef4444' }
+                  ].map(({ i, c }) => (
+                    <div key={i} style={{ width: 44, height: 44, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', marginLeft: '-14px', background: c, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, color: '#0b0d17', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>{i}</div>
+                  ))}
+                </div>
+                <span className={styles.avatarText}>Join 100K+ members today</span>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── FOOTER ── */}
+        <footer className={styles.footer}>
+          <div className={styles.inner}>
+            <div className={styles.footerGrid}>
+              <div className={styles.footerCol}>
+                <Link to="/" className={styles.footerLogo}>
+                  <div className={styles.logoIcon} /> FitMitra
+                </Link>
+                <p className={styles.footerDesc}>Smarter training, data-driven fitness for everyone, everywhere.</p>
+                <div className={styles.footerSocials}>
+                  <a href="#" className={styles.socialIcon}>IG</a>
+                  <a href="#" className={styles.socialIcon}>IN</a>
+                  <a href="#" className={styles.socialIcon}>FB</a>
+                  <a href="#" className={styles.socialIcon}>X</a>
                 </div>
               </div>
-            ))}
+              <div className={styles.footerCol}>
+                <h4>Company</h4>
+                <a href="#">About</a>
+                <a href="#">Community</a>
+                <a href="#">Blog</a>
+              </div>
+              <div className={styles.footerCol}>
+                <h4>Contact</h4>
+                <a href="#">Email</a>
+                <a href="#">Customer Service</a>
+                <a href="#">FAQ</a>
+              </div>
+              <div className={styles.footerCol}>
+                <h4>Policy</h4>
+                <a href="#">Terms of service</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Legal</a>
+              </div>
+              <div className={styles.footerCol}>
+                <h4>Career</h4>
+                <a href="#">Hiring</a>
+                <a href="#">Internship</a>
+                <a href="#">Meet Our Team</a>
+              </div>
+            </div>
+            <div className={styles.footerBottom}>
+              Copyright © 2026 FitMitra. All Rights Reserved.
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* FINAL CTA  */}
-      <section className={styles.cta}>
-        <img
-          src="https://res.cloudinary.com/dir5oumz5/image/upload/v1775307929/The_Olympia_Champions_Tee_-_Season_4_Drop_1_Signup_now_for_early_access_link_in_bio_nppuwx.jpg"
-          alt=""
-          className={styles.ctaBgImg}
-          aria-hidden="true"
-        />
-        <div className={styles.ctaOverlay} />
-        <div className={styles.ctaInner}>
-          <span className={styles.ctaTag}>🚀 Join 12,000+ members · Free forever</span>
-          <h2 className={styles.ctaH}>Your best shape is<br />one decision away</h2>
-          <p className={styles.ctaP}>
-            No credit card. No trial period. No hidden charges. Just results.
-          </p>
-          <div className={styles.ctaActions}>
-            <Link to="/signup" className={styles.btnWhite}>Get started for free →</Link>
-            <Link to="/login"  className={styles.btnOutlineW}>Already a member? Sign in</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className={styles.footer}>
-        <div className={styles.footerInner}>
-          <Link to="/" className={styles.footerLogo}>Fit<span>Mitra</span></Link>
-          <p className={styles.footerTagline}>Built for Nepal. Free forever.</p>
-          <div className={styles.footerLinks}>
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-            <a href="#">Contact</a>
-          </div>
-          <p className={styles.footerCopy}>© 2025 FitMitra. All rights reserved.</p>
-        </div>
-      </footer>
-
+        </footer>
+      </div>
     </div>
   );
 }

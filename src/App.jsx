@@ -32,7 +32,6 @@ import AdminPlans      from "./pages/protected/Admin/Sections/AdminPlans/AdminPl
 import AdminLogs       from "./pages/protected/Admin/Sections/AdminLogs/AdminLogs";
 import AdminAnalytics  from "./pages/protected/Admin/Sections/AdminAnalytics/AdminAnalytics";
 import AdminNotifications from "./pages/protected/Admin/Sections/AdminNotification/AdminNotfications";
-import AdminWellness from "./pages/protected/Admin/Sections/AdminWellness/AdminWellness";
 
 function App() {
   return (
@@ -40,7 +39,7 @@ function App() {
       <ThemeProvider>
         <Router>
           <Routes>
-            {/* ── Public ─────────────────────────────────────────────────── */}
+            {/* Public  */}
             <Route path="/"                      element={<Landing />} />
             <Route path="/signup"                element={<Signup />} />
             <Route path="/login"                 element={<Login />} />
@@ -51,8 +50,11 @@ function App() {
             <Route path="/404"                   element={<NotFound />} />
             <Route path="/check-email"           element={<CheckEmail />} />
             <Route path="/contact-support"       element={<ContactSupport />} />
+            <Route path="/test/onboarding"      element={<Onboarding />} />
+            <Route path="/test/dashboard"       element={<Dashboard />} />
 
-            {/* ── Admin — nested inside AdminLayout (sidebar persists) ──── */}
+
+            {/*  Admin  */}
             <Route
               path="/admin"
               element={
@@ -69,10 +71,9 @@ function App() {
               {<Route path="logs"          element={<AdminLogs />} /> }
               {<Route path="analytics"     element={<AdminAnalytics />} /> }
               {<Route path="notifications" element={<AdminNotifications />} /> }
-              {<Route path="wellness"      element={<AdminWellness />} />}  
             </Route>
 
-            {/* ── Protected user routes ───────────────────────────────────── */}
+            {/*  Protected user routes  */}
             <Route path="/onboarding" element={<ProtectedRoute allowOnboarding={true}><Onboarding /></ProtectedRoute>} />
             <Route path="/dashboard"  element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/profile"    element={<ProtectedRoute><Profile /></ProtectedRoute>} />

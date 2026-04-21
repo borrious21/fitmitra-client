@@ -1,7 +1,7 @@
-// ── src/pages/protected/Admin/AdminComponents.jsx ────────────
+// src/pages/protected/Admin/AdminComponents.jsx 
 import { useEffect, useState } from "react";
 
-// ── Badge ─────────────────────────────────────────────────────
+// Badge 
 export function Badge({ children, color = "gray" }) {
   const themes = {
     green:  { background: "rgba(34,197,94,0.12)",   color: "#22c55e" },
@@ -28,7 +28,7 @@ export function Badge({ children, color = "gray" }) {
   );
 }
 
-// ── Btn ───────────────────────────────────────────────────────
+//  Btn 
 export function Btn({ onClick, color = "orange", children, disabled, type = "button", style = {} }) {
   const bg = {
     orange: "#FF5C1A",
@@ -64,7 +64,7 @@ export function Btn({ onClick, color = "orange", children, disabled, type = "but
   );
 }
 
-// ── StatCard ──────────────────────────────────────────────────
+//  StatCard 
 export function StatCard({ label, value, sub, color = "#FF5C1A", icon }) {
   return (
     <div style={{
@@ -103,7 +103,7 @@ export function StatCard({ label, value, sub, color = "#FF5C1A", icon }) {
   );
 }
 
-// ── Field (form input / select / textarea) ────────────────────
+//  Field 
 export function Field({ label, value, onChange, type = "text", options, rows, placeholder }) {
   const inputStyle = {
     width: "100%",
@@ -334,7 +334,7 @@ const TOAST_THEME = {
   warning: { bg: "#1E1800", border: "rgba(245,158,11,0.3)", icon: "#f59e0b", bar: "#f59e0b" },
 };
 
-const DURATION = 3500; // ms
+const DURATION = 3500; 
 
 export function Toast({ msg, type = "success", onDone }) {
   const [visible,  setVisible]  = useState(false);
@@ -342,7 +342,6 @@ export function Toast({ msg, type = "success", onDone }) {
 
   const theme = TOAST_THEME[type] ?? TOAST_THEME.success;
 
-  // Animate in
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 10);
     return () => clearTimeout(t);

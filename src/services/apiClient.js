@@ -61,8 +61,14 @@ const attemptTokenRefresh = async () => {
   return refreshPromise;
 };
 
+import { getMockResponse } from './mockApi';
+
 export const apiFetch = async (endpoint, options = {}, _retry = true) => {
   const token = tokenStore.getToken();
+
+  if (token === 'mock-jwt-token') {
+    return getMockResponse(endpoint, options);
+  }
 
   const skipAuth = isAuthRoute(endpoint);
 
